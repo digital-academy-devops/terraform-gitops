@@ -12,13 +12,11 @@ jobs:
     env:
       STATES_DIR: states
       CONFIG_FILE: ".config.yaml"
-
     runs-on: ubuntu-latest
     steps:
-
       - name: Install yq
         run: |
-          apt update && apt install -y yq
+          sudo apt update && sudo apt install -y yq
 
       - uses: actions/checkout@v3
         with:
@@ -70,7 +68,7 @@ jobs:
     steps:
       - name: Install yc
         run: |
-          apt update && apt install -y curl
+          sudo apt update && sudo apt install -y curl
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
 
       - name: Configure yc
