@@ -1,10 +1,9 @@
 name: Apply tf changes
 on:
+  workflow_dispatch: {}
   push:
     branches:
     - '*'
-    paths:
-      - 'states/*'
 
 jobs:
   check-changes:
