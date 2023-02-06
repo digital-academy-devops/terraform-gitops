@@ -64,7 +64,7 @@ jobs:
           expires_at=$(date -d "+$ttl" '+%s')
                  
           echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_ENV
-          echo "YC_OWNER=${owner/ /_}" >> $GITHUB_ENV
+          echo "YC_OWNER=(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_ENV
           echo "YC_EXPIRES_AT=$expires_at" >> $GITHUB_ENV
           
 
