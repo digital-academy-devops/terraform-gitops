@@ -11,6 +11,12 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - uses: ./.github/actions/get-changes
 
   yc-config:
