@@ -14,12 +14,12 @@ jobs:
       - name: Configure yc
         shell: bash
         run: |
-          source ~/.bashrc
+          PATH="~/yandex-cloud/bin:$PATH"
           yc config profile create default
           yc config set token {{ secrets.YC_TOKEN }}
           yc config set cloud-id {{ secrets.YC_CLOUD }}
 
       - shell: bash
         run: |
-          source ~/.bashrc
+          PATH="~/yandex-cloud/bin:$PATH"
           yc config profile list
