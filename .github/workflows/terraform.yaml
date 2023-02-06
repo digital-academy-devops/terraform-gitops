@@ -98,6 +98,6 @@ jobs:
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile activate terraform
           
-          ARGS="--labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }} ${{ env.YC_FOLDER_NAME }}"
-          yc resource-manager folder create $ARGS || yc resource-manager folder update $ARGS
+          yc resource-manager folder create ${{ env.YC_FOLDER_NAME }} || yc resource-manager folder update ${{ env.YC_FOLDER_NAME }}
+          yc resource-manager folder update --labels owner="${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
           
