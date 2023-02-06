@@ -16,8 +16,8 @@ jobs:
         run: |
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile create default
-          yc config set token {{ secrets.YC_TOKEN }}
-          yc config set cloud-id {{ secrets.YC_CLOUD }}
+          yc config set token '{{ secrets.YC_TOKEN }}'
+          yc config set cloud-id '{{ secrets.YC_CLOUD }}'
 
       - shell: bash
         run: |
