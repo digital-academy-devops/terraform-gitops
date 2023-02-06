@@ -31,7 +31,7 @@ jobs:
             echo "$(basename $dir) changed"
           done
           
-          if [ $#changed_dirs[@] -gt 1 ]; then
+          if [ ${#changed_dirs[@]} -gt 1 ]; then
             echo "⛔️Only one state change per branch is supported, split your code changes."
             exit 1
           fi
