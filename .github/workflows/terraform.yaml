@@ -13,7 +13,7 @@ jobs:
 
       - name: Configure yc
         run: |
-          cat '${{ secrets.YC_CONFIG }}' > /root/.config/yandex-cloud/config.yaml
+          cat '${{ secrets.YC_CONFIG }}' > ~/.config/yandex-cloud/config.yaml
 
       - run: |
           yc config profile list
