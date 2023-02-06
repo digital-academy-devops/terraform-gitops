@@ -88,11 +88,13 @@ jobs:
           yc config profile create default
           yc config set token '{{ secrets.YC_TOKEN }}'
           yc config set cloud-id '{{ secrets.YC_CLOUD }}'
-      
-      - name: Get YC_FOLDER
+          yc config profile get default
+
+      - name: Configure folder
         shell: bash
         run: |
           PATH="~/yandex-cloud/bin:$PATH"
+          yc config profile get default
           yc resource-manager folder create --name ${{ env.YC_FOLDER_NAME }} || exit 0
           yc resource-manager folder update --name ${{ env.YC_FOLDER_NAME }} --labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}
           
