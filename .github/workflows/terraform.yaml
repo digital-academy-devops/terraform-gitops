@@ -4,6 +4,8 @@ on:
   push:
     branches:
     - '*'
+    paths:
+    - 'states/*'
 
 jobs:
   check-changes:
@@ -23,9 +25,16 @@ jobs:
 
       - run: |
           changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+          
+          # debug
           for dir in ${changed_dirs[@]}; do
             echo "$(basename $dir) changed"
           done
+          
+          if [${#changed_dirs[@]} -gt 1]; then
+            echo "⛔️Only one state change per branch is supported, split your code changes."
+            exit 1
+          fi
 
   yc-config:
     runs-on: ubuntu-latest
