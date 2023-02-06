@@ -15,7 +15,7 @@ jobs:
     outputs:
       yc_folder_name: ${{ env.YC_FOLDER_NAME }}
       yc_owner: ${{ env.YC_OWNER }}
-      yc_expires_at: ${{ env.yc_expires_at }}
+      yc_expires_at: ${{ env.YC_EXPIRES_AT }}
     runs-on: ubuntu-latest
     steps:
       - name: Install yq
@@ -98,6 +98,6 @@ jobs:
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile activate terraform
           
-          ARGS="--labels 'owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}' ${{ env.YC_FOLDER_NAME }}"
+          ARGS="--labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }} ${{ env.YC_FOLDER_NAME }}"
           yc resource-manager folder create $ARGS || yc resource-manager folder update $ARGS
           
