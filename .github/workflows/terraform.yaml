@@ -61,7 +61,7 @@ jobs:
           
           owner=$(yq '.owner' $config_file)
           ttl=$(yq '.ttl' $config_file)
-          expires_at=$(date -d "+$ttl")
+          expires_at=$(date -d "+$ttl" '+%F %T')
                  
           echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_ENV
           echo "YC_OWNER=$owner" >> $GITHUB_ENV
@@ -98,6 +98,6 @@ jobs:
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile activate terraform
           
-          ARGS="--name ${{ env.YC_FOLDER_NAME }} --labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
+          ARGS="--labels 'owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}' ${{ env.YC_FOLDER_NAME }}"
           yc resource-manager folder create $ARGS || yc resource-manager folder update $ARGS
           
