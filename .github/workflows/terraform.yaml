@@ -9,65 +9,9 @@ on:
 
 jobs:
   check-changes:
-    env:
-      STATES_DIR: states
-      CONFIG_FILE: ".config.yaml"
-    outputs:
-      yc_folder_name: ${{ env.YC_FOLDER_NAME }}
-      yc_owner: ${{ env.YC_OWNER }}
-      yc_expires_at: ${{ env.YC_EXPIRES_AT }}
     runs-on: ubuntu-latest
-    steps:
-      - name: Install yq
-        run: |
-          sudo apt update && sudo apt install -y wget
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod a+x /usr/local/bin/yq
-
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Get state directories
-        id: changed-files
-        uses: tj-actions/changed-files@v35
-        with:
-          files: ${{ env.STATES_DIR }}
-          dir_names: true
-          dir_names_max_depth: 2
-
-      - run: |
-          set -ex 
-          changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+    uses: ./github/actions/get-changes.yaml
           
-          # debug
-          for dir in ${changed_dirs[@]}; do
-            echo "$(basename $dir) changed"
-          done
-          
-          if [ ${#changed_dirs[@]} -gt 1 ]; then
-            echo "⛔️Only one state change per branch is supported, split your code changes."
-            exit 1
-          fi
-          
-          state_dir=${changed_dirs[0]}
-          
-          config_file="$state_dir/${{ env.CONFIG_FILE }}"
-          
-          if [ ! -f $config_file ] ; then
-            echo "⛔ config file not found - $config_file️"
-            exit 1
-          fi 
-          
-          owner=$(yq '.owner' $config_file)
-          ttl=$(yq '.ttl' $config_file)
-          expires_at=$(date -d "+$ttl" '+%s')
-                 
-          echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_ENV
-          echo "YC_OWNER=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_ENV
-          echo "YC_EXPIRES_AT=$expires_at" >> $GITHUB_ENV
-          
-
   yc-config:
     runs-on: ubuntu-latest
     needs:
