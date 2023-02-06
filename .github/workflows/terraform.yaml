@@ -23,7 +23,7 @@ jobs:
 
       - run: |
           changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
-          for dir in $changed_dirs[@]; do
+          for dir in ${changed_dirs[@]}; do
             echo "$(basename $dir) changed"
           done
 
