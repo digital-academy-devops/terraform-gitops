@@ -45,7 +45,7 @@ jobs:
             exit 1
           fi
           
-          state_dir=${{ env.STATES_DIR }}/${changed_dirs[0]}
+          state_dir=${changed_dirs[0]}
           
           config_file="$state_dir/${{ env.CONFIG_FILE }}"
           
