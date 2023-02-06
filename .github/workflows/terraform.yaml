@@ -22,8 +22,9 @@ jobs:
           dir_names_max_depth: 2
 
       - run: |
-          for dir in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$(basename $dir) was changed"
+          changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+          for dir in $changed_dirs[@]; do
+            echo "$(basename $dir) changed"
           done
 
   yc-config:
