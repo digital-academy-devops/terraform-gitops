@@ -45,12 +45,12 @@ jobs:
             exit 1
           fi
           
-          state_dir=${{ env.STATES_DIR }}/${#changed_dirs[@]}
+          state_dir=${{ env.STATES_DIR }}/${changed_dirs[0]}
           
           config_file="$state_dir/${{ env.CONFIG_FILE }}"
           
           if [ ! -f $config_file ] ; then
-            echo "⛔config file not found - $config_file️"
+            echo "⛔ config file not found - $config_file️"
             exit 1
           fi 
           
