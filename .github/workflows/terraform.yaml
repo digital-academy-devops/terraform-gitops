@@ -9,8 +9,17 @@ on:
 
 jobs:
   check-changes:
+    env:
+      STATES_DIR: states
+      CONFIG_FILE: ".config.yaml"
+
     runs-on: ubuntu-latest
     steps:
+
+      - name: Install yq
+        run: |
+          apt update && apt install -y yq
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -19,7 +28,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v35
         with:
-          files: states
+          files: ${{ env.STATES_DIR }}
           dir_names: true
           dir_names_max_depth: 2
 
@@ -35,6 +44,24 @@ jobs:
             echo "⛔️Only one state change per branch is supported, split your code changes."
             exit 1
           fi
+          
+          state_dir=${{ env.STATES_DIR }}/${#changed_dirs[@]}
+          
+          config_file="$state_dir/${{ env.CONFIG_FILE }}"
+          
+          if [ ! -f $config_file ] ; then
+            echo "⛔config file not found - $config_file️"
+            exit 1
+          fi 
+          
+          owner=$(yq '.owner' $config_file)
+          ttl=$(yq '.ttl' $config_file)
+          expiration_time=$(date -d "+$ttl")
+                 
+          echo "YC_FOLDER_NAME=$state_dir" >> $GITHUB_ENV
+          echo "YC_OWNER=$owner" >> $GITHUB_ENV
+          echo "YC_FOLDER_EXPIRES=$expiration_time" >> $GITHUB_ENV
+          
 
   yc-config:
     runs-on: ubuntu-latest
@@ -58,4 +85,6 @@ jobs:
         shell: bash
         run: |
           PATH="~/yandex-cloud/bin:$PATH"
-          yc resource-manager folder create --name {{ }}
+          yc resource-manager folder create --name ${{ env.YC_FOLDER_NAME }} || exit 0
+          yc resource-manager folder update --name ${{ env.YC_FOLDER_NAME }} --labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_FOLDER_EXPIRES }}
+          
