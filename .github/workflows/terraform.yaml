@@ -99,5 +99,5 @@ jobs:
           yc config profile activate terraform
           
           yc resource-manager folder create ${{ env.YC_FOLDER_NAME }} || /bin/true
-          yc resource-manager folder update --labels owner="${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
+          yc resource-manager folder update --name ${{ env.YC_FOLDER_NAME }} --labels owner="${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
           
