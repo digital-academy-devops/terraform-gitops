@@ -10,7 +10,8 @@ on:
 jobs:
   check-changes:
     runs-on: ubuntu-latest
-    uses: ./github/actions/get-changes.yaml
+    steps:
+      - uses: ./github/actions/get-changes.yaml
           
   yc-config:
     runs-on: ubuntu-latest
