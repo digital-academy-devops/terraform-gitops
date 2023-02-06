@@ -11,9 +11,9 @@ inputs:
     default: ".config.yaml"
 
 outputs:
-  yc_folder_name: ${{ env.YC_FOLDER_NAME }}
-  yc_owner: ${{ env.YC_OWNER }}
-  yc_expires_at: ${{ env.YC_EXPIRES_AT }}
+  yc_folder_name: ${{ steps.yc-config.outputs.YC_FOLDER_NAME }}
+  yc_owner: ${{ steps.yc-config.outputs.YC_OWNER }}
+  yc_expires_at: ${{ steps.yc-config.outputs.YC_EXPIRES_AT }}
 
 runs:
   using: "composite"
@@ -24,10 +24,6 @@ runs:
         sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
         sudo chmod a+x /usr/local/bin/yq
 
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
     - name: Get state directories
       id: changed-files
       uses: tj-actions/changed-files@v35
@@ -36,7 +32,8 @@ runs:
         dir_names: true
         dir_names_max_depth: 2
 
-    - run: |
+    - id: yc-config
+      run: |
         set -ex 
         changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
 
@@ -63,8 +60,6 @@ runs:
         ttl=$(yq '.ttl' $config_file)
         expires_at=$(date -d "+$ttl" '+%s')
 
-        echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_ENV
-        echo "YC_OWNER=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_ENV
-        echo "YC_EXPIRES_AT=$expires_at" >> $GITHUB_ENV
-
-
+        echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_OUTPUT
+        echo "YC_OWNER=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
+        echo "YC_EXPIRES_AT=$expires_at" >> $GITHUB_OUTPUT
