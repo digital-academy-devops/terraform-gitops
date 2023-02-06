@@ -76,8 +76,6 @@ jobs:
       YC_FOLDER_NAME: ${{ needs.check-changes.outputs.yc_folder_name }}
       YC_OWNER: ${{ needs.check-changes.outputs.yc_owner }}
       YC_EXPIRES_AT: ${{ needs.check-changes.outputs.yc_expires_at }}
-      YC_TOKEN: ${{ secrets.YC_TOKEN }}
-      YC_CLOUD: ${{ secrets.YC_CLOUD }}
     steps:
       - name: Install yc
         run: |
@@ -90,8 +88,8 @@ jobs:
           set -ex 
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile create default
-          yc config set token ${{ env.YC_TOKEN }}
-          yc config set cloud-id ${{ env.YC_CLOUD }}
+          yc config set token ${{ secrets.YC_TOKEN }}
+          yc config set cloud-id ${{ secrets.YC_CLOUD }}
           yc config profile get default
 
       - name: Configure folder
