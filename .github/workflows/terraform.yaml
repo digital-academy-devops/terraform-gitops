@@ -37,6 +37,7 @@ jobs:
           dir_names_max_depth: 2
 
       - run: |
+          set -ex 
           changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
           
           # debug
@@ -86,6 +87,7 @@ jobs:
       - name: Configure yc
         shell: bash
         run: |
+          set -ex 
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile create default
           yc config set token ${{ env.YC_TOKEN }}
@@ -95,6 +97,7 @@ jobs:
       - name: Configure folder
         shell: bash
         run: |
+          set -ex 
           PATH="~/yandex-cloud/bin:$PATH"
           yc config profile get default
           yc resource-manager folder create --name ${{ env.YC_FOLDER_NAME }} || exit 0
