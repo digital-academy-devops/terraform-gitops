@@ -11,7 +11,7 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./github/actions/get-changes.yaml
+      - uses: ./github/actions/get-changes
           
   yc-config:
     runs-on: ubuntu-latest
