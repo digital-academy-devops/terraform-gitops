@@ -5,7 +5,7 @@ on:
     branches:
     - '*'
     paths:
-    - 'states/*'
+    - 'states/**'
 
 jobs:
   check-changes:
