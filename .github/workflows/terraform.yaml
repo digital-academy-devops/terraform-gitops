@@ -82,23 +82,22 @@ jobs:
           sudo apt update && sudo apt install -y curl
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
 
-      - name: Configure yc
+      - name: Configure yc profile
         shell: bash
         run: |
           set -ex 
           PATH="~/yandex-cloud/bin:$PATH"
-          yc config profile create default
+          yc config profile create terraform
           yc config set token ${{ secrets.YC_TOKEN }}
           yc config set cloud-id ${{ secrets.YC_CLOUD }}
-          yc config profile get default
 
-      - name: Configure folder
+      - name: Configure ${{ env.YC_FOLDER_NAME }} folder
         shell: bash
         run: |
           set -ex 
           PATH="~/yandex-cloud/bin:$PATH"
-          yc config profile get default
-          yc config profile activate default
-          yc resource-manager folder create --name ${{ env.YC_FOLDER_NAME }} || exit 0
-          yc resource-manager folder update --name ${{ env.YC_FOLDER_NAME }} --labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}
+          yc config profile activate terraform
+          
+          ARGS="--name ${{ env.YC_FOLDER_NAME }} --labels owner=${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
+          yc resource-manager folder create $ARGS || yc resource-manager folder update $ARGS
           
