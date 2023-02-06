@@ -62,7 +62,7 @@ jobs:
           ttl=$(yq '.ttl' $config_file)
           expires_at=$(date -d "+$ttl")
                  
-          echo "YC_FOLDER_NAME=$state_dir" >> $GITHUB_ENV
+          echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_ENV
           echo "YC_OWNER=$owner" >> $GITHUB_ENV
           echo "YC_EXPIRES_AT=$expires_at" >> $GITHUB_ENV
           
