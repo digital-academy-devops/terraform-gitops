@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: -2
 
       - name: Get state directories
         id: changed-files
@@ -28,6 +28,8 @@ jobs:
 
   yc-config:
     runs-on: ubuntu-latest
+    needs:
+      - check-changes
     steps:
       - name: Install yc
         run: |
