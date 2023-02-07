@@ -33,6 +33,11 @@ jobs:
       YC_OWNER: ${{ needs.get-changes.outputs.yc_owner }}
       YC_EXPIRES_AT: ${{ needs.get-changes.outputs.yc_expires_at }}
     steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - uses: ./.github/actions/configure-yc
         with:
