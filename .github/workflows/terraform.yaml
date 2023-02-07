@@ -28,7 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: hashicorp/terraform:1.2.5
-      entrypoint: /bin/sh
     needs:
       - get-changes
     steps:
