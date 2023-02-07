@@ -1,0 +1,28 @@
+name: "Configure yc"
+description: "Installs and configures yc CLI"
+inputs:
+  cloud_id:
+    description: "cloud_id"
+    required: true
+  token:
+    description: "token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install yc
+      shell: bash
+      run: |
+        sudo apt update && sudo apt install -y curl
+        curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+        echo "~/yandex-cloud/bin" >> $GITHUB_PATH
+
+    - name: Configure yc profile
+      shell: bash
+      run: |
+        set -ex 
+        PATH="~/yandex-cloud/bin:$PATH"
+        yc config profile create terraform
+        yc config set token ${{ inputs.token }}
+        yc config set cloud-id ${{ inputs.cloud_id }}

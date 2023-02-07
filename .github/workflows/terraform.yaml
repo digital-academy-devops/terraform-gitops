@@ -33,26 +33,15 @@ jobs:
       YC_OWNER: ${{ needs.get-changes.outputs.yc_owner }}
       YC_EXPIRES_AT: ${{ needs.get-changes.outputs.yc_expires_at }}
     steps:
-      - name: Install yc
-        run: |
-          sudo apt update && sudo apt install -y curl
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
 
-      - name: Configure yc profile
-        shell: bash
-        run: |
-          set -ex 
-          PATH="~/yandex-cloud/bin:$PATH"
-          yc config profile create terraform
-          yc config set token ${{ secrets.YC_TOKEN }}
-          yc config set cloud-id ${{ secrets.YC_CLOUD }}
+      - uses: ./.github/actions/configure-yc
+        with:
+          token: ${{ secrets.YC_TOKEN }}
+          cloud_id: ${{ secrets.YC_CLOUD }}
 
       - name: Configure ${{ env.YC_FOLDER_NAME }} folder
         shell: bash
         run: |
-          set -ex 
-          PATH="~/yandex-cloud/bin:$PATH"
-          
           yc resource-manager folder create ${{ env.YC_FOLDER_NAME }} || /bin/true
           yc resource-manager folder update --name ${{ env.YC_FOLDER_NAME }} --labels owner="${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
           
