@@ -29,9 +29,6 @@ jobs:
     needs:
       - get-changes
     env:
-      YC_FOLDER_NAME: ${{ needs.get-changes.outputs.yc_folder_name }}
-      YC_OWNER: ${{ needs.get-changes.outputs.yc_owner }}
-      YC_EXPIRES_AT: ${{ needs.get-changes.outputs.yc_expires_at }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -39,14 +36,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - uses: ./.github/actions/configure-yc
+      - uses: ./.github/actions/configure-yc-cli
         with:
           token: ${{ secrets.YC_TOKEN }}
           cloud_id: ${{ secrets.YC_CLOUD }}
 
-      - name: Configure ${{ env.YC_FOLDER_NAME }} folder
-        shell: bash
-        run: |
-          yc resource-manager folder create ${{ env.YC_FOLDER_NAME }} || /bin/true
-          yc resource-manager folder update --name ${{ env.YC_FOLDER_NAME }} --labels owner="${{ env.YC_OWNER }},expires=${{ env.YC_EXPIRES_AT }}"
+      - name: Configure folder
+        uses: ./.github/actions/create-yc-folder
+        with:
+          name: ${{ needs.get-changes.outputs.yc_folder_name }}
+          labels: "owner=${{ needs.get-changes.outputs.yc_owner }},expires_at=${{ needs.get-changes.outputs.yc_expires_at }}"
+
+
           

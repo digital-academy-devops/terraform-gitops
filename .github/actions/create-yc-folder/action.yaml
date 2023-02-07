@@ -1,0 +1,18 @@
+name: "Configure yc"
+description: "Installs and configures yc CLI"
+inputs:
+  folder_name:
+    description: "folder_name"
+    required: true
+  labels:
+    description: "label1=value,label2=value"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create or update ${{ inputs.folder_name }}
+      shell: bash
+      run: |
+        yc resource-manager folder create ${{ inputs.folder_name }} || /bin/true
+        yc resource-manager folder update --name ${{ inputs.folder_name }} --labels owner="${{ inputs.labels }}"
