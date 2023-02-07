@@ -11,15 +11,15 @@ inputs:
     default: ".config.yaml"
 
 outputs:
-  yc_folder_name:
+  folder_name:
     description: "yc_folder_name"
-    value: ${{ steps.yc-config.outputs.YC_FOLDER_NAME }}
-  yc_owner:
+    value: ${{ steps.yc-config.outputs.folder_name }}
+  owner:
     description: "yc_owner"
-    value: ${{ steps.yc-config.outputs.YC_OWNER }}
-  yc_expires_at:
+    value: ${{ steps.yc-config.outputs.owner }}
+  expires_at:
     description: "yc_expires_at"
-    value: ${{ steps.yc-config.outputs.YC_EXPIRES_AT }}
+    value: ${{ steps.yc-config.outputs.expires_at }}
 
 runs:
   using: "composite"
@@ -68,6 +68,6 @@ runs:
         ttl=$(yq '.ttl' $config_file)
         expires_at=$(date -d "+$ttl" '+%s')
 
-        echo "YC_FOLDER_NAME=$(basename $state_dir)" >> $GITHUB_OUTPUT
-        echo "YC_OWNER=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
-        echo "YC_EXPIRES_AT=$expires_at" >> $GITHUB_OUTPUT
+        echo "folder_name=$(basename $state_dir)" >> $GITHUB_OUTPUT
+        echo "owner=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
+        echo "expires_at=$expires_at" >> $GITHUB_OUTPUT

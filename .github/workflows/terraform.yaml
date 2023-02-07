@@ -24,8 +24,11 @@ jobs:
       - uses: ./.github/actions/get-changes
         id: get-changes
 
-  yc-config:
+  terraform:
     runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:1.2.5
+      entrypoint: /bin/sh
     needs:
       - get-changes
     steps:
@@ -43,8 +46,16 @@ jobs:
       - name: Configure folder
         uses: ./.github/actions/create-yc-folder
         with:
-          name: ${{ needs.get-changes.outputs.yc_folder_name }}
-          labels: "owner=${{ needs.get-changes.outputs.yc_owner }},expires_at=${{ needs.get-changes.outputs.yc_expires_at }}"
+          name: ${{ needs.get-changes.outputs.folder_name }}
+          owner: ${{ needs.get-changes.outputs.owner }}
+          expires_at: ${{ needs.get-changes.outputs.expires_at }}"
+
+      #- name: Run terraform
+      #  env:
+      #    STATE_DIR: states/${{ needs.get-changes.outputs.folder_name }}
+      #   FOLDER_NAME: ${{ needs.get-changes.outputs.folder_name }}
+      #  run:
+
 
 
           
