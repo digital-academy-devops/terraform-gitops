@@ -28,7 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - get-changes
-    env:
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
