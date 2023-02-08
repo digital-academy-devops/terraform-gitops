@@ -1,17 +1,9 @@
 name: Apply tf changes
 on:
-  workflow_run:
-    workflows:
-      - apply
-    types:
-      - completed
-    branches:
-      - main
   push:
     branches:
-    - '*'
-    paths:
-    - 'states/**'
+      - main
+      - tf-workflow
 
 jobs:
   get-changes:
@@ -91,22 +83,17 @@ jobs:
               sh -c 'terraform init
               terraform plan -out=plan.out
               '
-        
-      - name: Terraform apply
-        shell: bash
-        if: github.ref == 'refs/heads/main'
-        run: |
-          set -e
-          docker run --rm \
-            --env YC_TOKEN \
-            --env YC_CLOUD_ID \
-            --env YC_FOLDER_ID \
-            --env AWS_ACCESS_KEY_ID \
-            --env AWS_SECRET_ACCESS_KEY \
-            --volume $(pwd):/workdir \
-            --workdir /workdir/$STATE_DIR \
-            --entrypoint="" \
-            hashicorp/terraform:1.3.6  \
-              sh -c 'terraform apply plan.out'
-
+      #
+      #- name: Terraform apply
+      #  shell: bash
+      #  run: |
+      #    set -e
+      #    docker run --rm \
+      #      ${TF_ENV} \
+      #      --volume $(pwd):/workdir \
+      #      --workdir /workdir/$STATE_DIR \
+      #      --entrypoint="" \
+      #      hashicorp/terraform:1.3.6  \
+      #        sh -c 'terraform apply plan.out'
+      #
           
