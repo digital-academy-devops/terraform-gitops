@@ -73,7 +73,6 @@ jobs:
           echo "TF_ENV=--env YC_TOKEN --env YC_CLOUD_ID --env YC_FOLDER_ID --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
 
       - name: Terraform plan
-        env:
         shell: bash
         run: |
           set -e
