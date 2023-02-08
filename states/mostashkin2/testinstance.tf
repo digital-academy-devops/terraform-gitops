@@ -37,6 +37,11 @@ data "yandex_compute_image" "my_image" {
   family = "ubuntu-2204-lts"
 }
 
+
+resource "yandex_vpc_network" "default" {
+  name = "default"
+}
+
 data "yandex_vpc_subnet" "default_zone_subnet" {
   name = "default-${local.zone}"
 }
