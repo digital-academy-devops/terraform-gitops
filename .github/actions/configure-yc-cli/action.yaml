@@ -26,6 +26,3 @@ runs:
         yc config profile create terraform
         yc config set token ${{ inputs.token }}
         yc config set cloud-id ${{ inputs.cloud_id }}
-        
-        echo "YC_TOKEN=$(yc iam create-token)" >> $GITHUB_ENV
-        echo "YC_CLOUD_ID=$(yc config get cloud-id)" >> $GITHUB_ENV
