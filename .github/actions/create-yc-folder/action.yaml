@@ -1,5 +1,5 @@
-name: "Configure yc"
-description: "Installs and configures yc CLI"
+name: "Configure yc folder"
+description: "Create or update folder in the cloud"
 inputs:
   name:
     description: "folder name"
