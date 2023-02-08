@@ -55,6 +55,10 @@ jobs:
           echo "YC_CLOUD_ID=$(yc config get cloud-id)" >> $GITHUB_ENV
           echo "TF_INPUT=false" >> $GITHUB_ENV
           echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
+
+      - name: Mask environment
+        shell: bash
+        run: |
           echo "::add-mask::$YC_FOLDER_ID" 
           echo "::add-mask::$YC_TOKEN" 
           echo "::add-mask::$YC_CLOUD_ID" 
