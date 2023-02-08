@@ -19,7 +19,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   network_interface {
-    subnet_id = data.yandex_vpc_subnet.default_zone_subnet.id
+    subnet_id = yandex_vpc_network.default.subnet_ids[0] #data.yandex_vpc_subnet.default_zone_subnet.id
     nat       = true
   }
 
@@ -40,8 +40,4 @@ data "yandex_compute_image" "my_image" {
 
 resource "yandex_vpc_network" "default" {
   name = "default"
-}
-
-data "yandex_vpc_subnet" "default_zone_subnet" {
-  name = "default-${local.zone}"
 }
