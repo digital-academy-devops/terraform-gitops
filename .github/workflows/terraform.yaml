@@ -45,7 +45,7 @@ jobs:
         with:
           name: ${{ needs.get-changes.outputs.folder_name }}
           owner: ${{ needs.get-changes.outputs.owner }}
-          expires_at: ${{ needs.get-changes.outputs.expires_at }}"
+          expires_at: ${{ needs.get-changes.outputs.expires_at }}
 
       - name: Run terraform
         env:
