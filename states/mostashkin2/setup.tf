@@ -17,8 +17,7 @@ terraform {
     endpoint = "storage.yandexcloud.net"
     bucket   = "dac-testcloud-tf"
     region   = "ru-central1"
-    key      = "example/terraform.tfstate"
-    profile  = "yc"
+    key      = "states/mostashkin2/terraform.tfstate"
 
     skip_region_validation      = true
     skip_credentials_validation = true
