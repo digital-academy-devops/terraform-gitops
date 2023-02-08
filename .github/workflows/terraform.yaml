@@ -1,6 +1,12 @@
 name: Apply tf changes
 on:
-  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+      - apply
+    types:
+      - completed
+    branches:
+      - main
   push:
     branches:
     - '*'
@@ -61,8 +67,8 @@ jobs:
           echo "YC_TOKEN=$YC_TOKEN" >> $GITHUB_ENV
           echo "YC_CLOUD_ID=$YC_CLOUD_ID" >> $GITHUB_ENV
           
-          echo "AWS_ACCESS_KEY_ID==${{ secrets.YC_ACCESS_KEY_ID }}" >> $GITHUB_ENV 
-          echo "AWS_SECRET_ACCESS_KEY==${{ secrets.YC_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV 
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.YC_ACCESS_KEY_ID }}" >> $GITHUB_ENV 
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.YC_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV 
           
           echo "TF_INPUT=false" >> $GITHUB_ENV
           echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
