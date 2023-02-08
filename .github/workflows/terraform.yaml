@@ -60,22 +60,25 @@ jobs:
           echo "YC_FOLDER_ID=$YC_FOLDER_ID" >> $GITHUB_ENV 
           echo "YC_TOKEN=$YC_TOKEN" >> $GITHUB_ENV
           echo "YC_CLOUD_ID=$YC_CLOUD_ID" >> $GITHUB_ENV
+          
+          echo "AWS_ACCESS_KEY_ID==${{ secrets.YC_ACCESS_KEY_ID }}" >> $GITHUB_ENV 
+          echo "AWS_SECRET_ACCESS_KEY==${{ secrets.YC_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV 
+          
           echo "TF_INPUT=false" >> $GITHUB_ENV
           echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
+          
+          echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
+          echo "FOLDER_NAME=${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
+
+          echo "TF_ENV=--env YC_TOKEN --env YC_CLOUD_ID --env YC_FOLDER_ID --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
 
       - name: Terraform plan
         env:
-          STATE_DIR: states/${{ needs.get-changes.outputs.folder_name }}
-          FOLDER_NAME: ${{ needs.get-changes.outputs.folder_name }}
         shell: bash
         run: |
           set -e
           docker run --rm \
-            --env YC_TOKEN \
-            --env YC_CLOUD_ID \
-            --env YC_FOLDER_ID \
-            --env AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }} \
-            --env AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }} \
+            ${TF_ENV} \
             --volume $(pwd):/workdir \
             --workdir /workdir/$STATE_DIR \
             --entrypoint="" \
@@ -93,8 +96,8 @@ jobs:
             --env YC_TOKEN \
             --env YC_CLOUD_ID \
             --env YC_FOLDER_ID \
-            --env AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }} \
-            --env AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }} \
+            --env AWS_ACCESS_KEY_ID \
+            --env AWS_SECRET_ACCESS_KEY \
             --volume $(pwd):/workdir \
             --workdir /workdir/$STATE_DIR \
             --entrypoint="" \
