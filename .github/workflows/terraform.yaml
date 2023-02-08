@@ -50,7 +50,7 @@ jobs:
       - name: Set YC environment
         shell: bash
         run: |
-          echo "YC_FOLDER_ID=$(yc resource-manager folder get --name ${{ inputs.name }} --format yaml | yq '.id')" >> $GITHUB_ENV 
+          echo "YC_FOLDER_ID=$(yc resource-manager folder get --name ${{ needs.get-changes.outputs.folder_name }} --format yaml | yq '.id')" >> $GITHUB_ENV 
           echo "YC_TOKEN=$(yc iam create-token)" >> $GITHUB_ENV
           echo "YC_CLOUD_ID=$(yc config get cloud-id)" >> $GITHUB_ENV
 
