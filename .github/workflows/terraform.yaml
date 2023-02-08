@@ -26,8 +26,6 @@ jobs:
 
   terraform:
     runs-on: ubuntu-latest
-    container:
-      image: hashicorp/terraform:1.2.5
     needs:
       - get-changes
     steps:
@@ -49,12 +47,23 @@ jobs:
           owner: ${{ needs.get-changes.outputs.owner }}
           expires_at: ${{ needs.get-changes.outputs.expires_at }}"
 
-      #- name: Run terraform
-      #  env:
-      #    STATE_DIR: states/${{ needs.get-changes.outputs.folder_name }}
-      #   FOLDER_NAME: ${{ needs.get-changes.outputs.folder_name }}
-      #  run:
-
+      - name: Run terraform
+        env:
+          STATE_DIR: states/${{ needs.get-changes.outputs.folder_name }}
+          FOLDER_NAME: ${{ needs.get-changes.outputs.folder_name }}
+        shell: bash
+        run: |
+          set -e
+          docker run --rm \
+            --env YC_TOKEN \
+            --env YC_CLOUD_ID \
+            --env YC_FOLDER_ID \ 
+            --volume $(pwd):/workdir \
+            --workdir /workdir/${{ env.STATE_DIR }} \
+            --entrypoint="" \
+            hashicorp/terraform:1.3.6  \
+              sh -c 'env; terraform init'
+        
 
 
           
