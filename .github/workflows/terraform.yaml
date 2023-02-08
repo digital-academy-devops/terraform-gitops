@@ -57,8 +57,8 @@ jobs:
           docker run --rm \
             --env YC_TOKEN \
             --env YC_CLOUD_ID \
-            --env AWS_ACCESS_KEY_ID=${{ secret.YC_STATE_ACCESS_KEY }} \
-            --env AWS_SECRET_ACCESS_KEY=${{ secret.YC_STATE_ACCESS_SECRET }} \
+            --env AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }} \
+            --env AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }} \
             --volume $(pwd):/workdir \
             --workdir /workdir/${{ env.STATE_DIR }} \
             --entrypoint="" \
