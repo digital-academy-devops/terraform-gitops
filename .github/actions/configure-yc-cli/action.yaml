@@ -29,4 +29,3 @@ runs:
         
         echo "YC_TOKEN=$(yc iam create-token)" >> $GITHUB_ENV
         echo "YC_CLOUD_ID=$(yc config get cloud-id)" >> $GITHUB_ENV
-        echo "YC_FOLDER_ID=$(yc config get folder-id)" >> $GITHUB_ENV

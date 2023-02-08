@@ -16,5 +16,6 @@ runs:
     - name: Create or update ${{ inputs.name }}
       shell: bash
       run: |
+        set -ex
         yc resource-manager folder create ${{ inputs.name }} || /bin/true
         yc resource-manager folder update --name ${{ inputs.name }} --labels "owner=${{ inputs.owner }},expires_at=${{ inputs.expires_at }}"
