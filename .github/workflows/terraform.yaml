@@ -11,9 +11,9 @@ jobs:
   get-changes:
     runs-on: ubuntu-latest
     outputs:
-      folder_name: ${{ steps.get-changes.outputs.yc_folder_name }}
-      owner: ${{ steps.get-changes.outputs.yc_owner }}
-      expires_at: ${{ steps.get-changes.outputs.yc_expires_at }}
+      folder_name: ${{ steps.get-changes.outputs.folder_name }}
+      owner: ${{ steps.get-changes.outputs.owner }}
+      expires_at: ${{ steps.get-changes.outputs.expires_at }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
