@@ -44,30 +44,35 @@ runs:
       run: |
         set -ex 
         changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
-
-        # debug
-        for dir in ${changed_dirs[@]}; do
-          echo "$(basename $dir) changed"
-        done
-
-        if [ ${#changed_dirs[@]} -gt 1 ]; then
-          echo "⛔️Only one state change per branch is supported, split your code changes."
-          exit 1
+        
+        if [ ${#changed_dirs[@]} -eq 0 ]; then
+          echo "No state changes found"
+          exit 0
+        else 
+          # debug
+          for dir in ${changed_dirs[@]}; do
+            echo "$(basename $dir) changed"
+          done
+  
+          if [ ${#changed_dirs[@]} -gt 1 ]; then
+            echo "⛔️Only one state change per branch is supported, split your code changes."
+            exit 1
+          fi
+  
+          state_dir=${changed_dirs[0]}
+  
+          config_file="$state_dir/${{ inputs.config_file }}"
+  
+          if [ ! -f $config_file ] ; then
+            echo "⛔ config file not found - $config_file️"
+            exit 1
+          fi 
+  
+          owner=$(yq '.owner' $config_file)
+          ttl=$(yq '.ttl' $config_file)
+          expires_at=$(date -d "+$ttl" '+%s')
+  
+          echo "folder_name=$(basename $state_dir)" >> $GITHUB_OUTPUT
+          echo "owner=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
+          echo "expires_at=$expires_at" >> $GITHUB_OUTPUT
         fi
-
-        state_dir=${changed_dirs[0]}
-
-        config_file="$state_dir/${{ inputs.config_file }}"
-
-        if [ ! -f $config_file ] ; then
-          echo "⛔ config file not found - $config_file️"
-          exit 1
-        fi 
-
-        owner=$(yq '.owner' $config_file)
-        ttl=$(yq '.ttl' $config_file)
-        expires_at=$(date -d "+$ttl" '+%s')
-
-        echo "folder_name=$(basename $state_dir)" >> $GITHUB_OUTPUT
-        echo "owner=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
-        echo "expires_at=$expires_at" >> $GITHUB_OUTPUT
