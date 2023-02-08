@@ -47,14 +47,19 @@ jobs:
           owner: ${{ needs.get-changes.outputs.owner }}
           expires_at: ${{ needs.get-changes.outputs.expires_at }}
 
-      - name: Set YC environment
+      - name: Set terraform environment
         shell: bash
         run: |
+          echo "::add-mask::$YC_FOLDER_ID" 
+          echo "::add-mask::$YC_TOKEN" 
+          echo "::add-mask::$YC_CLOUD_ID" 
           echo "YC_FOLDER_ID=$(yc resource-manager folder get --name ${{ needs.get-changes.outputs.folder_name }} --format yaml | yq '.id')" >> $GITHUB_ENV 
           echo "YC_TOKEN=$(yc iam create-token)" >> $GITHUB_ENV
           echo "YC_CLOUD_ID=$(yc config get cloud-id)" >> $GITHUB_ENV
+          echo "TF_INPUT=false" >> $GITHUB_ENV
+          echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
 
-      - name: Run terraform
+      - name: Terraform plan
         env:
           STATE_DIR: states/${{ needs.get-changes.outputs.folder_name }}
           FOLDER_NAME: ${{ needs.get-changes.outputs.folder_name }}
@@ -68,13 +73,28 @@ jobs:
             --env AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }} \
             --env AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }} \
             --volume $(pwd):/workdir \
-            --workdir /workdir/${{ env.STATE_DIR }} \
+            --workdir /workdir/$STATE_DIR \
             --entrypoint="" \
             hashicorp/terraform:1.3.6  \
               sh -c 'terraform init
               terraform plan -out=plan.out
               '
         
-
+      - name: Terraform apply
+        shell: bash
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -e
+          docker run --rm \
+            --env YC_TOKEN \
+            --env YC_CLOUD_ID \
+            --env YC_FOLDER_ID \
+            --env AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }} \
+            --env AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }} \
+            --volume $(pwd):/workdir \
+            --workdir /workdir/$STATE_DIR \
+            --entrypoint="" \
+            hashicorp/terraform:1.3.6  \
+              sh -c 'terraform apply plan.out'
 
           
