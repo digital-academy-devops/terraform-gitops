@@ -57,7 +57,6 @@ jobs:
           docker run --rm \
             --env YC_TOKEN \
             --env YC_CLOUD_ID \
-            --env YC_FOLDER_ID \ 
             --volume $(pwd):/workdir \
             --workdir /workdir/${{ env.STATE_DIR }} \
             --entrypoint="" \
