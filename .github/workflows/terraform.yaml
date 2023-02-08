@@ -57,11 +57,13 @@ jobs:
           docker run --rm \
             --env YC_TOKEN \
             --env YC_CLOUD_ID \
+            --env AWS_ACCESS_KEY_ID=${{ secret.YC_STATE_ACCESS_KEY }} \
+            --env AWS_SECRET_ACCESS_KEY=${{ secret.YC_STATE_ACCESS_SECRET }} \
             --volume $(pwd):/workdir \
             --workdir /workdir/${{ env.STATE_DIR }} \
             --entrypoint="" \
             hashicorp/terraform:1.3.6  \
-              sh -c 'env; terraform init'
+              sh -c 'terraform init'
         
 
 
