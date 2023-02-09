@@ -40,8 +40,10 @@ jobs:
   expire:
     needs:
       - get-expired
-    matrix:
-      folder: ${{ fromJson(needs.get-expired.outputs.namesJson ) }}
+    strategy:
+      fail-fast: true
+      matrix:
+        folder: ${{ fromJson(needs.get-expired.outputs.namesJson ) }}
     steps:
       - name: expiring ${{ matrix.folder }}
         run: |
