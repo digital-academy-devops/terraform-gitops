@@ -1,4 +1,4 @@
-name: Run terraform
+name: Expire states
 on:
   schedule:
     - cron: '5 * * * *'
