@@ -17,9 +17,15 @@ outputs:
   owner:
     description: "yc_owner"
     value: ${{ steps.yc-config.outputs.owner }}
+  terraform_operation:
+    description: "apply|destroy"
+    value: "${{ steps.yc-config.outputs.terraform_operation }}"
   expires_at:
     description: "yc_expires_at"
     value: ${{ steps.yc-config.outputs.expires_at }}
+  terraform_operation:
+    description: "apply|destroy"
+    value: "${{ steps.yc-config.outputs.terraform_operation }}"
 
 runs:
   using: "composite"
@@ -70,9 +76,37 @@ runs:
   
           owner=$(yq '.owner' $config_file)
           ttl=$(yq '.ttl' $config_file)
+          destroy=$(yq '.destroy' $config_file)
           expires_at=$(date -d "+$ttl" '+%s')
-  
+          terraform_operation="apply"
+          github_user=$(yq '.github_user' $config_file)
+          
+          if [ $destroy != "null" ]; then
+            terraform_operation="destroy"
+          fi
+        
+          validation_passed=true
+          if [ -z "$github_user" ] ; then
+            echo "⛔ Github user not set"
+            validation_passed=false
+          fi 
+        
+          if [ -z "$owner" ] ; then
+            echo "⛔ Owner not set"
+            validation_passed=false
+          fi 
+        
+          if [ -z "$ttl" ] ; then
+            echo "⛔ TTL not set"
+            validation_passed=false
+          fi 
+           
+          test "$validation_passed" == "true" || exit 1
+        
           echo "folder_name=$(basename $state_dir)" >> $GITHUB_OUTPUT
           echo "owner=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
+          echo "github_user=$github_user" >> $GITHUB_OUTPUT
           echo "expires_at=$expires_at" >> $GITHUB_OUTPUT
+          echo "terraform_operation=$terraform_operation" >> $GITHUB_OUTPUT
+        
         fi
