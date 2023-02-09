@@ -182,7 +182,7 @@ jobs:
               sh -c 'terraform apply plan.out'
 
       - name: Set expiration time
-        if: github.ref == "refs/heads/main"
+        if: github.ref == 'refs/heads/main'
         shell: bash
         env:
           name: ${{ needs.get-changes.outputs.folder_name }}
