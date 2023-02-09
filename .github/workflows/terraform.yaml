@@ -21,13 +21,13 @@ jobs:
         uses: jstone28/runner-workspace-cleaner@v1.0.0
 
       - uses: actions/checkout@v3
-        if: startsWith(github.ref, 'refs/heads/')
+        if: github.event_name == 'push'
 
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-        if: startsWith(github.ref, 'refs/pull/')
+        if: github.event_name == 'pull_request_target'
 
       - name: Install yq
         shell: bash
