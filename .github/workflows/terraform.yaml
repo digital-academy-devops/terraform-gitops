@@ -2,7 +2,7 @@ name: Run terraform
 on:
   push:
     branches:
-      - *
+      - '*'
 
 jobs:
   get-changes:
