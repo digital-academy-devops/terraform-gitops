@@ -61,8 +61,8 @@ jobs:
           echo "YC_TOKEN=$YC_TOKEN" >> $GITHUB_ENV
           echo "YC_CLOUD_ID=$YC_CLOUD_ID" >> $GITHUB_ENV
           
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.YC_ACCESS_KEY_ID }}" >> $GITHUB_ENV 
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.YC_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV 
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }}" >> $GITHUB_ENV 
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }}" >> $GITHUB_ENV 
           
           echo "TF_INPUT=false" >> $GITHUB_ENV
           
