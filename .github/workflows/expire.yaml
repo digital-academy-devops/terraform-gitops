@@ -1,6 +1,7 @@
 name: Run terraform
 on:
-  schedule: '5 * * * *'
+  schedule:
+    - cron: '5 * * * *'
   workflow_dispatch: {}
 
 jobs:

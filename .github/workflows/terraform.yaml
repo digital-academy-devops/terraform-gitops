@@ -12,6 +12,9 @@ jobs:
       owner: ${{ steps.state-changes.outputs.owner }}
       expires_at: ${{ steps.state-changes.outputs.expires_at }}
       terraform_operation: ${{ steps.state-changes.outputs.terraform_operation }}
+    env:
+      states_dir: states
+      config_file: .config.yaml
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -30,7 +33,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v35
         with:
-          files: ${{ inputs.states_dir }}
+          files: ${{ env.states_dir }}
           dir_names: true
           dir_names_max_depth: 2
 
@@ -56,7 +59,7 @@ jobs:
 
             state_dir=${changed_dirs[0]}
 
-            config_file="$state_dir/${{ inputs.config_file }}"
+            config_file="$state_dir/${{ env.config_file }}"
 
             if [ ! -f $config_file ] ; then
               echo "⛔ config file not found - $config_file️"
