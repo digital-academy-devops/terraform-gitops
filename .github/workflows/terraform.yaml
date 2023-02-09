@@ -72,7 +72,7 @@ jobs:
           
           echo "TF_ENV=--env YC_TOKEN --env YC_CLOUD_ID --env YC_FOLDER_ID --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
           
-          echo "TF_CONTAINER_OPTS=--volume $(pwd):/workdir --workdir /workdir/$STATE_DIR --entrypoint=''" >> $GITHUB_ENV
+          echo "TF_CONTAINER_OPTS=--volume $(pwd):/workdir --workdir /workdir/$STATE_DIR --entrypoint=" >> $GITHUB_ENV
           
           tf_plan_opts=""
           if [ "${{ needs.get-changes.outputs.terraform_operation }}" == "destroy" ]; then
