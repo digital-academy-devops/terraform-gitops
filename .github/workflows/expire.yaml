@@ -38,6 +38,7 @@ jobs:
           echo "namesJson=$namesJson" >> $GITHUB_OUTPUT
 
   expire:
+    runs-on: ubuntu-latest
     needs:
       - get-expired
     strategy:
