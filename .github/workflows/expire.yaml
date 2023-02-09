@@ -37,15 +37,15 @@ jobs:
           namesJson=$(yc resource-manager folder list --format json | NOW=$(date '+%s') jq  '.[] | select(.labels.expires_at) | select( .labels.expires_at|tonumber <= (env.NOW|tonumber) ) | .name' | jq -s .)
           echo "namesJson=$namesJson" >> $GITHUB_OUTPUT
 
-    expire:
-      needs:
-        - get-expired
-      matrix:
-        folder: ${{ fromJson(needs.get-expired.outputs.namesJson ) }}
-      steps:
-        - name: expiring ${{ matrix.folder }}
-          run: |
-            echo expired
+  expire:
+    needs:
+      - get-expired
+    matrix:
+      folder: ${{ fromJson(needs.get-expired.outputs.namesJson ) }}
+    steps:
+      - name: expiring ${{ matrix.folder }}
+        run: |
+          echo expired
 
 
       
