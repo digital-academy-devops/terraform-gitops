@@ -1,19 +1,197 @@
-name: Apply tf changes
+name: Run terraform
 on:
-  push: {}
+  push:
+    branches:
+      - '*'
+  pull_request_target: {}
 
 jobs:
-  yc-config:
+  get-changes:
     runs-on: ubuntu-latest
+    outputs:
+      folder_name: ${{ steps.state-changes.outputs.folder_name }}
+      owner: ${{ steps.state-changes.outputs.owner }}
+      expires_at: ${{ steps.state-changes.outputs.expires_at }}
+      terraform_operation: ${{ steps.state-changes.outputs.terraform_operation }}
+    env:
+      states_dir: states
+      config_file: .config.yaml
     steps:
-      - name: Install yc
-        run: |
-          apt update && apt install -y curl
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
 
-      - name: Configure yc
-        run: |
-          cat ${{ secret.YC_CONFIG }} > /root/.config/yandex-cloud/config.yaml
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - run: |
-          yc config profile list
+      - name: Install yq
+        shell: bash
+        run: |
+          sudo apt update && sudo apt install -y wget
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+      - name: Get state directories
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: ${{ env.states_dir }}
+          dir_names: true
+          dir_names_max_depth: 2
+
+      - id: state-changes
+        shell: bash
+        run: |
+          set -ex 
+          changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+
+          if [ ${#changed_dirs[@]} -eq 0 ]; then
+            echo "No state changes found"
+            exit 0
+          else 
+            # debug
+            for dir in ${changed_dirs[@]}; do
+              echo "$(basename $dir) changed"
+            done
+
+            if [ ${#changed_dirs[@]} -gt 1 ]; then
+              echo "⛔️Only one state change per branch is supported, split your code changes."
+              exit 1
+            fi
+
+            state_dir=${changed_dirs[0]}
+
+            config_file="$state_dir/${{ env.config_file }}"
+
+            if [ ! -f $config_file ] ; then
+              echo "⛔ config file not found - $config_file️"
+              exit 1
+            fi 
+
+            owner=$(yq '.owner' $config_file)
+            ttl=$(yq '.ttl' $config_file)
+            expired_on=$(yq '.expired_on' $config_file)
+            terraform_operation="apply"
+            github_user=$(yq '.github_user' $config_file)
+
+            if [ $expired_on != "null" ]; then
+              terraform_operation="destroy"
+            fi
+
+            validation_passed=true
+            if [ -z "$github_user" ] ; then
+              echo "⛔ Github user not set"
+              validation_passed=false
+            fi 
+
+            if [ -z "$owner" ] ; then
+              echo "⛔ Owner not set"
+              validation_passed=false
+            fi 
+
+            if [ -z "$ttl" ] ; then
+              echo "⛔ TTL not set"
+              validation_passed=false
+            fi 
+
+            test "$validation_passed" == "true" || exit 1
+
+            echo "folder_name=$(basename $state_dir)" >> $GITHUB_OUTPUT
+            echo "owner=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
+            echo "github_user=$github_user" >> $GITHUB_OUTPUT
+            echo "expires_at=$expires_at" >> $GITHUB_OUTPUT
+            echo "terraform_operation=$terraform_operation" >> $GITHUB_OUTPUT
+
+          fi
+
+  terraform:
+    runs-on: ubuntu-latest
+    env:
+      TF_VERSION: 1.3.6
+    needs:
+      - get-changes
+    if: ${{ needs.get-changes.outputs.folder_name }} 
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/configure-yc-cli
+        with:
+          token: ${{ secrets.YC_TOKEN }}
+          cloud_id: ${{ secrets.YC_CLOUD }}
+
+      - name: Create folder
+        shell: bash
+        env:
+          name: ${{ needs.get-changes.outputs.folder_name }}
+          owner: ${{ needs.get-changes.outputs.owner }}
+        run: |
+          yc resource-manager folder create ${{ env.name }} || /bin/true
+          yc resource-manager folder add-labels --name ${{ env.name }} --labels "owner=${{ env.owner }}"
+
+      - name: Set terraform environment
+        shell: bash
+        run: |
+          YC_FOLDER_ID=$(yc resource-manager folder get --name ${{ needs.get-changes.outputs.folder_name }} --format yaml | yq '.id')
+          YC_TOKEN=$(yc iam create-token)
+          YC_CLOUD_ID=$(yc config get cloud-id)
+          echo "::add-mask::$YC_FOLDER_ID" 
+          echo "::add-mask::$YC_TOKEN" 
+          echo "::add-mask::$YC_CLOUD_ID" 
+          
+          echo "YC_FOLDER_ID=$YC_FOLDER_ID" >> $GITHUB_ENV 
+          echo "YC_TOKEN=$YC_TOKEN" >> $GITHUB_ENV
+          echo "YC_CLOUD_ID=$YC_CLOUD_ID" >> $GITHUB_ENV
+          
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.YC_STATE_ACCESS_KEY }}" >> $GITHUB_ENV 
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.YC_STATE_ACCESS_SECRET }}" >> $GITHUB_ENV 
+          
+          echo "TF_INPUT=false" >> $GITHUB_ENV
+          
+          state_dir="states/${{ needs.get-changes.outputs.folder_name }}"
+          echo "STATE_DIR=$state_dir" >> $GITHUB_ENV
+          
+          echo "TF_ENV=--env YC_TOKEN --env YC_CLOUD_ID --env YC_FOLDER_ID --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
+          
+          echo "TF_CONTAINER_OPTS=--volume $(pwd):/workdir --workdir /workdir/${state_dir} --entrypoint=" >> $GITHUB_ENV
+          
+          tf_plan_opts=""
+          if [ "${{ needs.get-changes.outputs.terraform_operation }}" == "destroy" ]; then
+            tf_plan_opts="$tf_plan_opts -destroy"
+          fi
+          
+          echo "TF_PLAN_OPTS=$tf_plan_opts" >> $GITHUB_ENV
+
+      - name: Terraform plan
+        shell: bash
+        run: |
+          docker run --rm \
+            ${TF_ENV} \
+            ${TF_CONTAINER_OPTS} \
+            hashicorp/terraform:${{ env.TF_VERSION }}  \
+              sh -c 'terraform init
+              terraform plan ${TF_PLAN_OPTS} -out=plan.out
+              '
+
+      - name: Terraform apply
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          docker run --rm \
+            ${TF_ENV} \
+            ${TF_CONTAINER_OPTS} \
+            hashicorp/terraform:${{ env.TF_VERSION }}  \
+              sh -c 'terraform apply plan.out'
+
+      - name: Set expiration time
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          name: ${{ needs.get-changes.outputs.folder_name }}
+          expires_at: ${{ needs.get-changes.outputs.expires_at }}
+        run: |
+          yc resource-manager folder add-labels --name ${{ env.name }} --labels "expires_at=${{ env.expires_at }}"
+          
+          
