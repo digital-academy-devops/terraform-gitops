@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           namesJson=$(yc resource-manager folder list --format json | NOW=$(date '+%s') jq  '.[] | select(.labels.expires_at) | select( .labels.expires_at|tonumber <= (env.NOW|tonumber) ) | .name' | jq -s .)
-          echo "namesJson=$namesJson" >> $GITHUB_OUTPUT
+          # echo "namesJson=$namesJson" >> $GITHUB_OUTPUT
 
   expire:
     runs-on: ubuntu-latest
