@@ -29,20 +29,21 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
         if: github.event_name == 'pull_request_target'
 
+      - name: Get state directories
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          files: ${{ env.states_dir }}
+          dir_names: true
+          dir_names_max_depth: 2
+
       - name: Install yq
         shell: bash
         run: |
           sudo apt update && sudo apt install -y wget
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
-
-      - name: Get state directories
-        id: changed-files
-        uses: tj-actions/changed-files@v35
-        with:
-          files: ${{ env.states_dir }}no
-          dir_names: true
-          dir_names_max_depth: 2
 
       - id: state-changes
         shell: bash
