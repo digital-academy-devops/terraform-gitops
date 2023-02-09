@@ -8,9 +8,10 @@ jobs:
   get-changes:
     runs-on: ubuntu-latest
     outputs:
-      folder_name: ${{ steps.get-changes.outputs.folder_name }}
-      owner: ${{ steps.get-changes.outputs.owner }}
-      expires_at: ${{ steps.get-changes.outputs.expires_at }}
+      folder_name: ${{ steps.state-changes.outputs.folder_name }}
+      owner: ${{ steps.state-changes.outputs.owner }}
+      expires_at: ${{ steps.state-changes.outputs.expires_at }}
+      terraform_operation: ${{ steps.state-changes.outputs.terraform_operation }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -18,8 +19,85 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - uses: ./.github/actions/get-changes
-        id: get-changes
+      - name: Install yq
+        shell: bash
+        run: |
+          sudo apt update && sudo apt install -y wget
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+      - name: Get state directories
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: ${{ inputs.states_dir }}
+          dir_names: true
+          dir_names_max_depth: 2
+
+      - id: state-changes
+        shell: bash
+        run: |
+          set -ex 
+          changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+
+          if [ ${#changed_dirs[@]} -eq 0 ]; then
+            echo "No state changes found"
+            exit 0
+          else 
+            # debug
+            for dir in ${changed_dirs[@]}; do
+              echo "$(basename $dir) changed"
+            done
+
+            if [ ${#changed_dirs[@]} -gt 1 ]; then
+              echo "⛔️Only one state change per branch is supported, split your code changes."
+              exit 1
+            fi
+
+            state_dir=${changed_dirs[0]}
+
+            config_file="$state_dir/${{ inputs.config_file }}"
+
+            if [ ! -f $config_file ] ; then
+              echo "⛔ config file not found - $config_file️"
+              exit 1
+            fi 
+
+            owner=$(yq '.owner' $config_file)
+            ttl=$(yq '.ttl' $config_file)
+            expired_on=$(yq '.expired_on' $config_file)
+            terraform_operation="apply"
+            github_user=$(yq '.github_user' $config_file)
+
+            if [ $expired_on != "null" ]; then
+              terraform_operation="destroy"
+            fi
+
+            validation_passed=true
+            if [ -z "$github_user" ] ; then
+              echo "⛔ Github user not set"
+              validation_passed=false
+            fi 
+
+            if [ -z "$owner" ] ; then
+              echo "⛔ Owner not set"
+              validation_passed=false
+            fi 
+
+            if [ -z "$ttl" ] ; then
+              echo "⛔ TTL not set"
+              validation_passed=false
+            fi 
+
+            test "$validation_passed" == "true" || exit 1
+
+            echo "folder_name=$(basename $state_dir)" >> $GITHUB_OUTPUT
+            echo "owner=$(echo $owner | tr '[:upper:]' '[:lower:]' | tr " " "_")" >> $GITHUB_OUTPUT
+            echo "github_user=$github_user" >> $GITHUB_OUTPUT
+            echo "expires_at=$expires_at" >> $GITHUB_OUTPUT
+            echo "terraform_operation=$terraform_operation" >> $GITHUB_OUTPUT
+
+          fi
 
   terraform:
     runs-on: ubuntu-latest
@@ -40,12 +118,14 @@ jobs:
           token: ${{ secrets.YC_TOKEN }}
           cloud_id: ${{ secrets.YC_CLOUD }}
 
-      - name: Configure folder
-        uses: ./.github/actions/create-yc-folder
-        with:
+      - name: Create folder
+        shell: bash
+        env:
           name: ${{ needs.get-changes.outputs.folder_name }}
           owner: ${{ needs.get-changes.outputs.owner }}
-          expires_at: ${{ needs.get-changes.outputs.expires_at }}
+        run: |
+          yc resource-manager folder create ${{ env.name }} || /bin/true
+          yc resource-manager folder add-labels --name ${{ env.name }} --labels "owner=${{ env.owner }}"
 
       - name: Set terraform environment
         shell: bash
@@ -83,7 +163,6 @@ jobs:
       - name: Terraform plan
         shell: bash
         run: |
-          set -e
           docker run --rm \
             ${TF_ENV} \
             ${TF_CONTAINER_OPTS} \
@@ -96,11 +175,19 @@ jobs:
         if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
-          set -e
           docker run --rm \
             ${TF_ENV} \
             ${TF_CONTAINER_OPTS} \
             hashicorp/terraform:${{ env.TF_VERSION }}  \
               sh -c 'terraform apply plan.out'
-      
+
+      - name: Set expiration time
+        if: github.ref == "refs/heads/main"
+        shell: bash
+        env:
+          name: ${{ needs.get-changes.outputs.folder_name }}
+          expires_at: ${{ needs.get-changes.outputs.expires_at }}
+        run: |
+          yc resource-manager folder add-labels --name ${{ env.name }} --labels "expires_at=${{ env.expires_at }}"
+          
           

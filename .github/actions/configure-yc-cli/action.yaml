@@ -21,7 +21,6 @@ runs:
     - name: Configure yc profile
       shell: bash
       run: |
-        set -ex 
         yc config profile create terraform
         yc config set token ${{ inputs.token }}
         yc config set cloud-id ${{ inputs.cloud_id }}
