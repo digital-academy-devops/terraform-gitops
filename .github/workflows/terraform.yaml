@@ -65,14 +65,13 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.YC_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV 
           
           echo "TF_INPUT=false" >> $GITHUB_ENV
-          echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
           
-          echo "STATE_DIR=states/${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
-          echo "FOLDER_NAME=${{ needs.get-changes.outputs.folder_name }}" >> $GITHUB_ENV
+          state_dir="states/${{ needs.get-changes.outputs.folder_name }}"
+          echo "STATE_DIR=$state_dir" >> $GITHUB_ENV
           
           echo "TF_ENV=--env YC_TOKEN --env YC_CLOUD_ID --env YC_FOLDER_ID --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
           
-          echo "TF_CONTAINER_OPTS=--volume $(pwd):/workdir --workdir /workdir/$STATE_DIR --entrypoint=" >> $GITHUB_ENV
+          echo "TF_CONTAINER_OPTS=--volume $(pwd):/workdir --workdir /workdir/${state_dir} --entrypoint=" >> $GITHUB_ENV
           
           tf_plan_opts=""
           if [ "${{ needs.get-changes.outputs.terraform_operation }}" == "destroy" ]; then
