@@ -17,9 +17,9 @@ outputs:
   owner:
     description: "yc_owner"
     value: ${{ steps.yc-config.outputs.owner }}
-  terraform_operation:
-    description: "apply|destroy"
-    value: "${{ steps.yc-config.outputs.terraform_operation }}"
+  github_user:
+    description: "owner github username"
+    value: "${{ steps.yc-config.outputs.github_user }}"
   expires_at:
     description: "yc_expires_at"
     value: ${{ steps.yc-config.outputs.expires_at }}
