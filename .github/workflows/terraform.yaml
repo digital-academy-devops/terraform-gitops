@@ -20,8 +20,14 @@ jobs:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
 
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        if: startsWith(github.ref, 'refs/heads/')
+
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+        if: startsWith(github.ref, 'refs/pull/')
 
       - name: Install yq
         shell: bash
