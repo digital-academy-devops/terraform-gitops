@@ -33,9 +33,6 @@ runs:
           echo "No state changes found"
           exit 0
         else 
-          for dir in ${changed_dirs[@]}; do
-            echo "$(dir) changed"
-          done
 
           if [ ${#changed_dirs[@]} -gt 1 ]; then
             echo "⛔️Only one state change per run is supported, split your code changes."
