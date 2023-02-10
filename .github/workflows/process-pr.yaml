@@ -1,4 +1,4 @@
-name: "Pull Request Labeler"
+name: Process PR
 on:
   pull_request:
     types:

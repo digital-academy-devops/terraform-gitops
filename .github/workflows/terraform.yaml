@@ -24,7 +24,7 @@ jobs:
   get-changed-state:
     runs-on: ubuntu-latest
     outputs:
-      states_dir: ${{ github.event.inputs.states_dir || steps.changed-state.outputs.changed-state }}
+      dir: ${{ github.event.inputs.states_dir || steps.changed-state.outputs.changed-state }}
     env:
       states_dir: states
     steps:
