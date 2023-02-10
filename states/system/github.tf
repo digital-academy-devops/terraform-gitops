@@ -83,6 +83,6 @@ resource "random_string" "color" {
 resource "github_issue_label" "hour" {
   count = 23
   repository = data.github_repository.terraform-gitops.name
-  name       = "[count.index]hour"
+  name       = "${count.index}-hour"
   color      = random_string.color[count.index].result
 }
