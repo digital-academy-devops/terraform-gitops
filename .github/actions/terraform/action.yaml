@@ -60,6 +60,7 @@ runs:
           ${{ inputs.container_opts }} \
           hashicorp/terraform:${{ inputs.version }}  \
             sh -c '
+            set -ex
             terraform init
             terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out
             if [ "${{ inputs.apply_changes }}" == 'true' ]; then
