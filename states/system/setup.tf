@@ -14,7 +14,7 @@ terraform {
     }
 
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "3.4.3"
     }
   }
@@ -31,7 +31,7 @@ terraform {
 }
 
 provider "yandex" {
-  zone = "ru-central1-a"
+  zone                     = "ru-central1-a"
   service_account_key_file = "sa_key.json"
 }
 

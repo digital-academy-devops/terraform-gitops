@@ -36,11 +36,11 @@ module "apply_env" {
 resource "github_branch_protection" "main" {
   repository_id = data.github_repository.terraform-gitops.id
 
-  pattern          = "main"
-  enforce_admins   = false
-  allows_deletions = false
-  allows_force_pushes = false
-  required_linear_history = true
+  pattern                         = "main"
+  enforce_admins                  = false
+  allows_deletions                = false
+  allows_force_pushes             = false
+  required_linear_history         = true
   require_conversation_resolution = true
 
   #required_status_checks {
@@ -73,16 +73,16 @@ resource "github_issue_label" "apply" {
 }
 
 resource "random_string" "color" {
-  count = 23
+  count            = 23
   length           = 6
   special          = true
-  min_special = 6
+  min_special      = 6
   override_special = "0123456789abcdef"
 }
 
 resource "github_issue_label" "hour" {
-  count = 23
+  count      = 23
   repository = data.github_repository.terraform-gitops.name
-  name       = "${count.index}-hour"
+  name       = "${count.index + 1}-hour"
   color      = random_string.color[count.index].result
 }

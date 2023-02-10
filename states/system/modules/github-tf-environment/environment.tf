@@ -9,7 +9,7 @@ resource "github_repository_environment" "env" {
   # custom branch rules cannot be configured via tf provider and have to be manually set
   deployment_branch_policy {
     protected_branches     = var.protected_branches
-    custom_branch_policies = ! var.protected_branches
+    custom_branch_policies = !var.protected_branches
   }
 }
 

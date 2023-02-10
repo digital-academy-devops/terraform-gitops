@@ -36,8 +36,8 @@ data "terraform_remote_state" "system" {
 }
 
 provider "yandex" {
-  zone = "ru-central1-a"
+  zone                     = "ru-central1-a"
   service_account_key_file = "sa_key.json"
-  cloud_id = data.terraform_remote_state.system.outputs.cloud-id
-  folder_id = data.terraform_remote_state.system.outputs.mostashkin-folder-id
+  cloud_id                 = data.terraform_remote_state.system.outputs.cloud-id
+  folder_id                = data.terraform_remote_state.system.outputs.mostashkin-folder-id
 }
