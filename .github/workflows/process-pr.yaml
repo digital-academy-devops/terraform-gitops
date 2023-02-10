@@ -39,7 +39,7 @@ jobs:
             ttl=$(<.ttl)
           fi
           
-          now=$(date -d '+%s')
+          now=$(date '+%s')
           expires_at=$(date -d "+$ttl" '+%s')
           
           difference=$(( ( $expires_at - $now ) / 3600 ))
