@@ -5,7 +5,7 @@ module "terraform-sa" {
   cloud_id  = data.yandex_resourcemanager_cloud.do-course-1.id
   roles = [
     "compute.admin",
-    "resource-manager.editor",
+    "resource-manager.admin",
     "iam.admin",
     "storage.editor",
     "vpc.admin",
