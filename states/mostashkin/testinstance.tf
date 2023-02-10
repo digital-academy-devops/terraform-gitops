@@ -1,4 +1,4 @@
-#trigger8
+#trigger9
 locals {
   zone = "ru-central1-a"
 }

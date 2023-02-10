@@ -46,8 +46,10 @@ runs:
           ${{ inputs.container_opts }} \
           hashicorp/terraform:${{ inputs.version }}  \
             sh -c 'touch sa_key.json 
-            echo "$KEY" >> sa_key.json
-            cat sa_key.json
+            cat > sa_key.json <<EOF
+            $KEY
+            EOF
+            
             terraform init
             terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out
             '
