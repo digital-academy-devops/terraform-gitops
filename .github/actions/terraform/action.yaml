@@ -24,7 +24,7 @@ inputs:
   env:
     description: "container environment"
     required: false
-    default: "--env TF_INPUT=false --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY"
+    default: "--env TF_INPUT=false --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env GITHUB_TOKEN"
   state_access_key:
     description: "will be used in AWS_ACCESS_KEY_ID"
     required: true
@@ -51,7 +51,8 @@ runs:
     - name: Terraform plan
       shell: bash
       env:
-        DIRECTORY: ${{ inputs.directory }}
+        # don't forget to update inputs.env
+        GITHUB_TOKEN: ${{ github.token }}
         AWS_ACCESS_KEY_ID: ${{ inputs.state_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.state_secret_access_key }}
       run: |
