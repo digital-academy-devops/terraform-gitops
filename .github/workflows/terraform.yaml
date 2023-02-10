@@ -50,7 +50,7 @@ jobs:
           states_dir=""
           operation=""
           
-          if [ -n "${{ github.event.inputs.states_dir }}"]; then
+          if [ -n "${{ github.event.inputs.states_dir }}" ]; then
             states_dir = "${{ github.event.inputs.states_dir }}"
             operation = "${{ github.event.inputs.operation }}"
           else
