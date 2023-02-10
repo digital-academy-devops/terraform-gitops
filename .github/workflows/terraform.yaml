@@ -98,6 +98,7 @@ jobs:
           sa_key: ${{ secrets.SA_KEY }}
           state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: clean workspace
         if: always()
@@ -124,6 +125,7 @@ jobs:
           sa_key: ${{ secrets.SA_KEY }}
           state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           apply_changes: "true"
 
       - name: clean workspace
