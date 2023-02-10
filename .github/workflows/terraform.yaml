@@ -3,11 +3,23 @@ on:
   push:
     branches:
       - 'main'
+    #paths:
+    #  - "states/*"
   pull_request: {}
   workflow_dispatch:
     inputs:
-
-
+      states_dir:
+        description: states directory path"
+        default: "states/<folder_name>"
+        required: true
+      operation:
+        description: operation to perform
+        required: true
+        type: choice
+        default: "apply"
+        options:
+          - "apply"
+          - "destroy"
 jobs:
   get-changes:
     runs-on: ubuntu-latest
@@ -35,27 +47,32 @@ jobs:
         shell: bash
         run: |
           set -ex 
-          changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
-
-          if [ ${#changed_dirs[@]} -eq 0 ]; then
-            echo "No state changes found"
-            exit 0
-          else 
-            # debug
-            for dir in ${changed_dirs[@]}; do
-              echo "$(basename $dir) changed"
-            done
-
-            if [ ${#changed_dirs[@]} -gt 1 ]; then
-              echo "⛔️Only one state change per branch is supported, split your code changes."
-              exit 1
-            fi
-
-            state_dir=${changed_dirs[0]}
-
-            echo "states_dir=${changed_dirs[0]}" >> $GITHUB_OUTPUT
-            echo "operation=apply" >> $GITHUB_OUTPUT
+          states_dir=""
+          operation=apply
+          
+          if [ -n "${{ github.event.inputs.states_dir }}"]; then
+            states_dir = "${{ github.event.inputs.states_dir }}"
+            operation = "${{ github.event.inputs.operation }}"
+          else
+            changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+  
+            if [ ${#changed_dirs[@]} -eq 0 ]; then
+              echo "No state changes found"
+              exit 0
+            else 
+              # debug
+              for dir in ${changed_dirs[@]}; do
+                echo "$(basename $dir) changed"
+              done
+  
+              if [ ${#changed_dirs[@]} -gt 1 ]; then
+                echo "⛔️Only one state change per run is supported, split your code changes."
+                exit 1
+              fi
           fi
+          
+          echo "states_dir=${changed_dirs[0]}" >> $GITHUB_OUTPUT
+          echo "operation=$operation" >> $GITHUB_OUTPUT
 
   plan:
     environment: plan
