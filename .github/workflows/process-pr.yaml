@@ -10,7 +10,8 @@ jobs:
 
   labels:
     env:
-      DEFAULT_TTL: "1"
+      DEFAULT_TTL: "4 hours"
+      EXPIRATION_LIMIT_HOURS: 8
     runs-on: ubuntu-latest
     steps:
       - name: clean workspace
@@ -27,9 +28,10 @@ jobs:
         with:
           state_dir: ${{ steps.changed-state.outputs.dir }}
 
-      - id: expire-at
+      - id: expiration
         shell: bash
         run: |
+          set -e
           cd ${{ steps.changed-state.outputs.dir }}
           
           ttl="$DEFAULT_TTL"
@@ -37,15 +39,28 @@ jobs:
             ttl=$(<.ttl)
           fi
           
-          if [ $ttl -gt 24 ]; then
+          now=$(date -d '+%s')
+          expires_at=$(date -d "+$ttl" '+%s')
+          
+          difference=$(( ( $expires_at - $now ) / 3600 ))
+          
+          if [ $difference -gt 24 ]; then
             label='hi-expiration-time'
           fi
           
           echo "label=${ttl}-hour" >> $GITHUB_OUTPUT
-          
+
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          labels: |
+            hi-expiration-time
+            apply
+            destroy
+
       - uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           labels: |
-            ${{ steps.expire-at.outputs.label }}
+            ${{ steps.expiration.outputs.label }}
             ${{ steps.operation.outputs.operation }}

@@ -77,18 +77,3 @@ resource "github_issue_label" "hi-expiration-time" {
   name       = "hi-expiration-time"
   color      = "d73a4a"
 }
-
-resource "random_string" "color" {
-  count            = 24
-  length           = 6
-  special          = true
-  min_special      = 6
-  override_special = "0123456789abcdef"
-}
-
-resource "github_issue_label" "hour" {
-  count      = 24
-  repository = data.github_repository.terraform-gitops.name
-  name       = "${count.index + 1}-hour"
-  color      = random_string.color[count.index].result
-}
