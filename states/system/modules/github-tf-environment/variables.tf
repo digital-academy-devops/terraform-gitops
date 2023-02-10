@@ -1,20 +1,25 @@
 variable "environment" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "repository" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "reviewers" {
-  type = list(number)
+  type    = list(number)
   default = []
 }
 
+variable "protected_branches" {
+  type    = bool
+  default = true
+}
+
 variable "secrets" {
-  type = map(any)
+  type    = map(any)
   default = {}
 
 }

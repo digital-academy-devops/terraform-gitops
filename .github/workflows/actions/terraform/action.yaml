@@ -1,0 +1,54 @@
+name: "Run terraform"
+description: ""
+inputs:
+  directory:
+    description: "path to directory"
+    required: true
+  sa_key:
+    description: "service account key"
+    required: true
+  version:
+    description: "image version"
+    required: false
+    default: "1.3.6"
+  operation:
+    description: "apply or destroy"
+    default: "apply"
+  container_opts:
+    description: "container run options"
+    required: false
+    default: "--volume $(pwd):/workdir --workdir /workdir/${state_dir} --entrypoint="
+  env:
+    description: "container environment"
+    required: false
+    default: "--env TF_INPUT=false --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY"
+  state_access_key:
+    description: "will be used in AWS_ACCESS_KEY_ID"
+    required: true
+  state_secret_access_key:
+    description: "will be used in AWS_SECRET_ACCESS_KEY"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Put key
+      shell: bash
+      env:
+        KEY: ${{ inputs.sa_key }}
+      run: |
+        echo "$KEY" > sa_key.json
+
+    - name: Terraform plan
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.state_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.state_secret_access_key }}
+      run: |
+        docker run --rm \
+          ${{ inputs.env }} \
+          ${{ inputs.container_opts }} \
+          hashicorp/terraform:${{ inputs.version }}  \
+            sh -c 'terraform init
+            terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out
+            '

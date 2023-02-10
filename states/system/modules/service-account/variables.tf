@@ -1,19 +1,19 @@
 variable "name" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "folder_id" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "cloud_id" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "roles" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
