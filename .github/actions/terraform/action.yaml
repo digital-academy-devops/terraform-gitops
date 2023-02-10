@@ -39,13 +39,12 @@ runs:
       run: |
         set -ex
         touch sa_key.json 
-        echo "123'" >> sa_key.json
+        echo "$KEY" >> sa_key.json
         cat sa_key.json
         
         touch sa_key2.json 
-        echo "$KEY" >> sa_key2.json
+        echo "123" >> sa_key2.json
         cat sa_key2.json
-        
         
     - name: Terraform plan
       shell: bash
