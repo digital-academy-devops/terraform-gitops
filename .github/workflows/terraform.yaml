@@ -5,7 +5,10 @@ on:
       - 'main'
     paths:
       - "states/**/*"
-  pull_request: {}
+  pull_request:
+    types:
+      - labeled
+      - synchronize
   workflow_dispatch:
     inputs:
       states_dir:

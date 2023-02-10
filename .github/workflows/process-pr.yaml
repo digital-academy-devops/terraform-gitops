@@ -10,7 +10,7 @@ jobs:
 
   set-expiration:
     env:
-      DEFAULT_TTL: "1 day"
+      DEFAULT_TTL: "1"
     runs-on: ubuntu-latest
     steps:
       - name: clean workspace
@@ -30,4 +30,21 @@ jobs:
       - id: expire-at
         shell: bash
         run: |
-          cd ${{ steps.}}
+          cd ${{ steps.changed-state.outputs.dir }}
+          
+          ttl = "$DEFAULT_TTL"
+          if [ -e .ttl ]; then
+            ttl=$(<.ttl)
+          fi
+          
+          if [ $ttl -g]
+          
+          
+          echo "label=${ttl}-hour" >> $GITHUB_OUTPUT
+          
+
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: |
+            documentation
+            changelog

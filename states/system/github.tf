@@ -63,17 +63,23 @@ resource "github_branch_protection" "main" {
 resource "github_issue_label" "destroy" {
   repository = data.github_repository.terraform-gitops.name
   name       = "destroy"
-  color      = "d73a4a"
+  color      = "f25e02"
 }
 
 resource "github_issue_label" "apply" {
   repository = data.github_repository.terraform-gitops.name
   name       = "apply"
-  color      = "FBCA04"
+  color      = "fbca04"
+}
+
+resource "github_issue_label" "hi-expiration-time" {
+  repository = data.github_repository.terraform-gitops.name
+  name       = "hi-expiration-time"
+  color      = "d73a4a"
 }
 
 resource "random_string" "color" {
-  count            = 23
+  count            = 24
   length           = 6
   special          = true
   min_special      = 6
