@@ -32,7 +32,7 @@ jobs:
         run: |
           cd ${{ steps.changed-state.outputs.dir }}
           
-          ttl = "$DEFAULT_TTL"
+          ttl="$DEFAULT_TTL"
           if [ -e .ttl ]; then
             ttl=$(<.ttl)
           fi
