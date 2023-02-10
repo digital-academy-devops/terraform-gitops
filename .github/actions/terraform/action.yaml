@@ -14,6 +14,9 @@ inputs:
   operation:
     description: "apply or destroy"
     default: "apply"
+  apply_changes:
+    description: "apply changes after plan"
+    default: "false"
   container_opts:
     description: "container run options"
     required: false
@@ -59,4 +62,5 @@ runs:
             sh -c '
             terraform init
             terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out
+            test "${{ inputs.apply_changes }}" == 'true' && terraform apply plan.out
             '
