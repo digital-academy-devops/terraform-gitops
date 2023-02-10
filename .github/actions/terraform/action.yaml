@@ -62,5 +62,7 @@ runs:
             sh -c '
             terraform init
             terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out
-            test "${{ inputs.apply_changes }}" == 'true' && terraform apply plan.out
+            if [ "${{ inputs.apply_changes }}" == 'true' ]; then
+              terraform apply plan.out
+            fi
             '
