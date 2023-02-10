@@ -17,7 +17,7 @@ inputs:
   container_opts:
     description: "container run options"
     required: false
-    default: "--volume $(pwd):/workdir --workdir /workdir/${state_dir} --entrypoint="
+    default: "--volume $(pwd):/workdir --workdir /workdir/${STATE_DIR} --entrypoint="
   env:
     description: "container environment"
     required: false
@@ -42,6 +42,7 @@ runs:
     - name: Terraform plan
       shell: bash
       env:
+        DIRECTORY: ${{ inputs.directory }}
         AWS_ACCESS_KEY_ID: ${{ inputs.state_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.state_secret_access_key }}
       run: |
