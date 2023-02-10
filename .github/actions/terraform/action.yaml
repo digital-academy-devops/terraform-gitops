@@ -40,6 +40,8 @@ runs:
         cat > sa_key.json <<EOF
         $KEY
         EOF 
+        
+        cat sa_key.json
 
     - name: Terraform plan
       shell: bash
