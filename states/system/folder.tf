@@ -3,8 +3,6 @@ resource "yandex_resourcemanager_folder" "mostashkin" {
   name = "mostashkin"
   labels = {
     owner = "mikhailostashkin"
-    ttl = "1d"
-    created_at = formatdate("YYYYMMDDhhmmss", timestamp())
   }
 }
 

@@ -21,11 +21,10 @@ on:
           - "apply"
           - "destroy"
 jobs:
-  get-changes:
+  get-changed-state:
     runs-on: ubuntu-latest
     outputs:
-      states_dir: ${{ steps.state-changes.outputs.states_dir }}
-      operation: ${{ steps.state-changes.outputs.operation }}
+      states_dir: ${{ github.event.inputs.states_dir || steps.changed-state.outputs.changed-state }}
     env:
       states_dir: states
     steps:
@@ -35,55 +34,35 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Get state directories
-        id: changed-files
-        uses: tj-actions/changed-files@v35
-        with:
-          files: ${{ env.states_dir }}
-          dir_names: true
-          dir_names_max_depth: 2
+      - id: changed-state
+        uses: ./.github/actions/changes-state
 
-      - id: state-changes
-        shell: bash
-        run: |
-          set -ex 
-          states_dir=""
-          operation=""
-          
-          if [ -n "${{ github.event.inputs.states_dir }}" ]; then
-            states_dir="${{ github.event.inputs.states_dir }}"
-            operation="${{ github.event.inputs.operation }}"
-          else
-            changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
-  
-            if [ ${#changed_dirs[@]} -eq 0 ]; then
-              echo "No state changes found"
-              exit 0
-            else 
-              # debug
-              for dir in ${changed_dirs[@]}; do
-                echo "$(dir) changed"
-              done
-  
-              if [ ${#changed_dirs[@]} -gt 1 ]; then
-                echo "⛔️Only one state change per run is supported, split your code changes."
-                exit 1
-              fi
-              
-              states_dir=${changed_dirs[0]}
-              operation="apply"
-            fi
-          fi
-          
-          echo "states_dir=$states_dir" >> $GITHUB_OUTPUT
-          echo "operation=$operation" >> $GITHUB_OUTPUT
+  get-operation:
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-state
+    outputs:
+      operation: ${{ github.event.inputs.operation || steps.operation.outputs.operation }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: operation
+        uses: ./.github/actions/operation
+        with:
+          state_dir: ${{ needs.get-changed-state.outputs.dir }}
+
 
   plan:
     environment: plan
     runs-on: ubuntu-latest
     needs:
-      - get-changes
-    if: ${{ needs.get-changes.outputs.states_dir }}
+      - get-changed-state
+      - get-operation
+    if: ${{ needs.get-changed-state.outputs.dir }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -93,8 +72,8 @@ jobs:
 
       - uses: ./.github/actions/terraform
         with:
-          directory: ${{ needs.get-changes.outputs.states_dir }}
-          operation: ${{ needs.get-changes.outputs.operation }}
+          directory: ${{ needs.get-changed-state.outputs.dir }}
+          operation: ${{ needs.get-operation.outputs.operation }}
           sa_key: ${{ secrets.SA_KEY }}
           state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -108,9 +87,10 @@ jobs:
     environment: apply
     runs-on: ubuntu-latest
     needs:
-      - get-changes
+      - get-changed-state
+      - get-operation
       - plan
-    if: ${{ needs.get-changes.outputs.states_dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)) }}
+    if: ${{ needs.get-changed-state.outputs.dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)) }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -120,8 +100,8 @@ jobs:
 
       - uses: ./.github/actions/terraform
         with:
-          directory: ${{ needs.get-changes.outputs.states_dir }}
-          operation: ${{ needs.get-changes.outputs.operation }}
+          directory: ${{ needs.get-changed-state.outputs.dir }}
+          operation: ${{ needs.get-operation.outputs.operation }}
           sa_key: ${{ secrets.SA_KEY }}
           state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -131,4 +111,6 @@ jobs:
       - name: clean workspace
         if: always()
         uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+
 
