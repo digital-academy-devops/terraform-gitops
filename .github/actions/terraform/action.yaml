@@ -33,20 +33,30 @@ runs:
   using: "composite"
   steps:
 
+    - name: Put key
+      shell: bash
+      env:
+        KEY: ${{ inputs.sa_key }}
+        DIRECTORY: ${{ inputs.directory }}
+      run: |
+        set -ex
+        cd $DIRECTORY
+        cat > sa_key.json <<EOF
+        $KEY
+        EOF
+        
     - name: Terraform plan
       shell: bash
       env:
         DIRECTORY: ${{ inputs.directory }}
         AWS_ACCESS_KEY_ID: ${{ inputs.state_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.state_secret_access_key }}
-        KEY: ${{ inputs.sa_key }}
       run: |
         docker run --rm \
           ${{ inputs.env }} \
           ${{ inputs.container_opts }} \
           hashicorp/terraform:${{ inputs.version }}  \
-            sh -c 'touch sa_key.json 
-            
+            sh -c '
             terraform init
-            terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out 
+            terraform plan ${{ inputs.operation == 'destroy' && '-destroy' || ''  }} -out=plan.out
             '
