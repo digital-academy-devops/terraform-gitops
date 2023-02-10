@@ -8,6 +8,7 @@ module "terraform-sa" {
     "resource-manager.editor",
     "iam.serviceAccounts.admin",
     "storage.editor",
+    "vpc.admin",
   ]
 }
 
