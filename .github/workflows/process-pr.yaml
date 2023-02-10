@@ -44,11 +44,13 @@ jobs:
           
           difference=$(( ( $expires_at - $now ) / 3600 ))
           
+          label=""
+          
           if [ $difference -gt $EXPIRATION_LIMIT_HOURS ]; then
             label='hi-expiration-time'
           fi
           
-          echo "label=${ttl}-hour" >> $GITHUB_OUTPUT
+          echo "label=${label}" >> $GITHUB_OUTPUT
 
       - uses: actions-ecosystem/action-remove-labels@v1
         with:
