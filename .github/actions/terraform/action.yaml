@@ -17,7 +17,7 @@ inputs:
   container_opts:
     description: "container run options"
     required: false
-    default: "--volume $(pwd):/workdir --workdir /workdir/${STATE_DIR} --entrypoint="
+    default: "--volume $(pwd):/workdir --workdir /workdir/${DIRECTORY} --entrypoint="
   env:
     description: "container environment"
     required: false
