@@ -60,3 +60,29 @@ resource "github_branch_protection" "main" {
 
 }
 
+resource "github_issue_label" "destroy" {
+  repository = data.github_repository.terraform-gitops.name
+  name       = "destroy"
+  color      = "d73a4a"
+}
+
+resource "github_issue_label" "apply" {
+  repository = data.github_repository.terraform-gitops.name
+  name       = "apply"
+  color      = "FBCA04"
+}
+
+resource "random_string" "color" {
+  count = 23
+  length           = 6
+  special          = true
+  min_special = 6
+  override_special = "0123456789abcdef"
+}
+
+resource "github_issue_label" "hour" {
+  count = 23
+  repository = data.github_repository.terraform-gitops.name
+  name       = "[count.index]hour"
+  color      = random_string.color[count.index].result
+}

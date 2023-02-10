@@ -26,3 +26,8 @@ jobs:
         uses: ./.github/actions/operation
         with:
           state_dir: steps.changed-state.outputs.dir
+
+      - id: expire-at
+        shell: bash
+        run: |
+          cd ${{ steps.}}

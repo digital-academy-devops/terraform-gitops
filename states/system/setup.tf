@@ -12,6 +12,11 @@ terraform {
       source  = "integrations/github"
       version = "~> 5.0"
     }
+
+    random = {
+      source = "hashicorp/random"
+      version = "3.4.3"
+    }
   }
 
   backend "s3" {
@@ -31,6 +36,8 @@ provider "yandex" {
 }
 
 provider "github" {}
+
+provider "random" {}
 
 # cloud and default folder created via UI
 data "yandex_resourcemanager_cloud" "do-course-1" {
