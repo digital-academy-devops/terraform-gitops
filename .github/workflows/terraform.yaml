@@ -62,7 +62,7 @@ jobs:
             else 
               # debug
               for dir in ${changed_dirs[@]}; do
-                echo "$(basename $dir) changed"
+                echo "$(dir) changed"
               done
   
               if [ ${#changed_dirs[@]} -gt 1 ]; then
@@ -93,7 +93,7 @@ jobs:
 
       - uses: ./.github/actions/terraform
         with:
-          directory: ${{ needs.get-changes.outputs.folder_name }}
+          directory: ${{ needs.get-changes.outputs.states_dir }}
           operation: ${{ needs.get-changes.outputs.operation }}
           sa_key: ${{ secrets.SA_KEY }}
           state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
