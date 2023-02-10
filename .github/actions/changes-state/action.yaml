@@ -27,7 +27,7 @@ runs:
         set -ex 
         dir=""
 
-        changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
+        changed_dirs=(${{ steps.changed-files.outputs.all_changed_and_modified_files }})
 
         if [ ${#changed_dirs[@]} -eq 0 ]; then
           echo "No state changes found"
