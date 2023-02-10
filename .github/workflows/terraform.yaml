@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - 'main'
-    #paths:
-    #  - "states/*"
+    paths:
+      - "states/*"
   pull_request: {}
   workflow_dispatch:
     inputs:
@@ -84,6 +84,31 @@ jobs:
     needs:
       - get-changes
     if: ${{ needs.get-changes.outputs.states_dir }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/terraform
+        with:
+          directory: ${{ needs.get-changes.outputs.states_dir }}
+          operation: ${{ needs.get-changes.outputs.operation }}
+          sa_key: ${{ secrets.SA_KEY }}
+          state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: clean workspace
+        if: always()
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+  apply:
+    environment: apply
+    runs-on: ubuntu-latest
+    needs:
+      - get-changes
+    if: ${{ needs.get-changes.outputs.states_dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.workflow_ref == 'mostashkin/terraform-gitops/.github/workflows/terraform.yml@refs/heads/main') }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
