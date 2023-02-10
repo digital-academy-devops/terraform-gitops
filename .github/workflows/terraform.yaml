@@ -16,7 +16,6 @@ jobs:
       operation: ${{ steps.state-changes.outputs.operation }}
     env:
       states_dir: states
-      config_file: .config.yaml
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -30,7 +29,7 @@ jobs:
         with:
           files: ${{ env.states_dir }}
           dir_names: true
-          dir_names_max_depth: 1
+          dir_names_max_depth: 2
 
       - id: state-changes
         shell: bash

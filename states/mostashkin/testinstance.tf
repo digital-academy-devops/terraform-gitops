@@ -1,3 +1,4 @@
+#test
 locals {
   zone = "ru-central1-a"
 }
