@@ -1,5 +1,4 @@
 name: Run terraform plan
-id: terraform
 on:
   push:
     branches:
