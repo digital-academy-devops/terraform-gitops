@@ -10,7 +10,6 @@ jobs:
 
   labels:
     env:
-      DEFAULT_TTL: "4 hours"
       EXPIRATION_LIMIT_HOURS: 8
     runs-on: ubuntu-latest
     steps:
@@ -28,19 +27,16 @@ jobs:
         with:
           state_dir: ${{ steps.changed-state.outputs.dir }}
 
+      - id: expires-at
+        uses: ./.github/actions/expires-at
+        with:
+          state_dir: ${{ steps.changed-state.outputs.dir }}
+
       - id: expiration
         shell: bash
         run: |
-          set -e
-          cd ${{ steps.changed-state.outputs.dir }}
-          
-          ttl="$DEFAULT_TTL"
-          if [ -e .ttl ]; then
-            ttl=$(<.ttl)
-          fi
-          
           now=$(date '+%s')
-          expires_at=$(date -d "+$ttl" '+%s')
+          expires_at=${{ steps.expires-at.outputs.expires-at }}
           
           difference=$(( ( $expires_at - $now ) / 3600 ))
           

@@ -1,0 +1,26 @@
+name: "Get expiration time"
+description: ""
+inputs:
+  state_dir:
+    description: "path to state direcroty"
+outputs:
+  expires_at:
+    description: ""
+    value: ${{ steps.expires-at.outputs.expires-at }}
+runs:
+  using: "composite"
+  steps:
+    - id: expires-at
+      env:
+        DEFAULT_TTL: "4 hours"
+      shell: bash
+      run: |
+        set -e
+        cd ${{ inputs.state_dir }}
+
+        ttl="$DEFAULT_TTL"
+        if [ -e .ttl ]; then
+          ttl=$(<.ttl)
+        fi
+
+        echo "expires_at=$(date -d "+$ttl" '+%s')" >> $GITHUB_OUTPUT
