@@ -37,12 +37,9 @@ runs:
       env:
         KEY: ${{ inputs.sa_key }}
       run: |
-        cat > sa_key.json <<EOF
-        $KEY
-        EOF 
+        touch sa_key.json 
+        echo -n '$KEY' >> sa_key.json 
         
-        cat sa_key.json
-
     - name: Terraform plan
       shell: bash
       env:
