@@ -38,7 +38,8 @@ runs:
         KEY: ${{ inputs.sa_key }}
       run: |
         touch sa_key.json 
-        echo -n '$KEY' >> sa_key.json 
+        echo '123' >> sa_key.json
+        cat sa_key.json
         
     - name: Terraform plan
       shell: bash
