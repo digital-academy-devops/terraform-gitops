@@ -51,8 +51,8 @@ jobs:
           operation=""
           
           if [ -n "${{ github.event.inputs.states_dir }}" ]; then
-            states_dir = "${{ github.event.inputs.states_dir }}"
-            operation = "${{ github.event.inputs.operation }}"
+            states_dir="${{ github.event.inputs.states_dir }}"
+            operation="${{ github.event.inputs.operation }}"
           else
             changed_dirs=(${{ steps.changed-files.outputs.all_changed_files }})
   
@@ -72,6 +72,7 @@ jobs:
               
               states_dir=${changed_dirs[0]}
               operation="apply"
+            fi
           fi
           
           echo "states_dir=$states_dir" >> $GITHUB_OUTPUT
