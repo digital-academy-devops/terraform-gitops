@@ -4,7 +4,7 @@ on:
     branches:
       - 'main'
     paths:
-      - "states/*"
+      - "states/**/*"
   pull_request: {}
   workflow_dispatch:
     inputs:
