@@ -44,7 +44,7 @@ jobs:
           
           difference=$(( ( $expires_at - $now ) / 3600 ))
           
-          if [ $difference -gt 24 ]; then
+          if [ $difference -gt $EXPIRATION_LIMIT_HOURS ]; then
             label='hi-expiration-time'
           fi
           
