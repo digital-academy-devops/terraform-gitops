@@ -52,6 +52,7 @@ runs:
       shell: bash
       env:
         # don't forget to update inputs.env
+        DIRECTORY: ${{ inputs.directory }}
         GITHUB_TOKEN: ${{ github.token }}
         AWS_ACCESS_KEY_ID: ${{ inputs.state_access_key }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.state_secret_access_key }}

@@ -6,7 +6,7 @@ module "terraform-sa" {
   roles = [
     "compute.admin",
     "resource-manager.editor",
-    "iam.serviceAccounts.admin",
+    "iam.admin",
     "storage.editor",
     "vpc.admin",
   ]
@@ -21,5 +21,7 @@ module "terraform-viewer-sa" {
     "compute.viewer",
     "resource-manager.viewer",
     "storage.viewer",
+    "iam.viewer",
+    "vpc.viewer",
   ]
 }
