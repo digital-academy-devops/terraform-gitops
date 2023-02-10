@@ -109,7 +109,7 @@ jobs:
     needs:
       - get-changes
       - plan
-    if: ${{ needs.get-changes.outputs.states_dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.workflow_ref == 'mostashkin/terraform-gitops/.github/workflows/terraform.yml@refs/heads/main') }}
+    if: ${{ needs.get-changes.outputs.states_dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)) }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
