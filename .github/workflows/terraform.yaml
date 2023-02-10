@@ -48,7 +48,7 @@ jobs:
         run: |
           set -ex 
           states_dir=""
-          operation=apply
+          operation=""
           
           if [ -n "${{ github.event.inputs.states_dir }}"]; then
             states_dir = "${{ github.event.inputs.states_dir }}"
@@ -69,9 +69,12 @@ jobs:
                 echo "⛔️Only one state change per run is supported, split your code changes."
                 exit 1
               fi
+              
+              states_dir=${changed_dirs[0]}
+              operation="apply"
           fi
           
-          echo "states_dir=${changed_dirs[0]}" >> $GITHUB_OUTPUT
+          echo "states_dir=$states_dir" >> $GITHUB_OUTPUT
           echo "operation=$operation" >> $GITHUB_OUTPUT
 
   plan:
