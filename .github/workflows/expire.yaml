@@ -34,6 +34,12 @@ jobs:
       matrix:
         state_dir: ${{ fromJson(needs.get-states.outputs.states_json) }}
     steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - id: expire
         shell: bash
         name: Check expiration for ${{ matrix.state_dir }}
