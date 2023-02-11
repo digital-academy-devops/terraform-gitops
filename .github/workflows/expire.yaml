@@ -86,3 +86,5 @@ jobs:
           commit-message: "destroy ${{ matrix.state_dir }}"
           body: "${{ matrix.state_dir }} expired at ${{ steps.expired.outputs.expired_at }}"
           title: "Destroy ${{ matrix.state_dir }}"
+          labels: |
+            expired
