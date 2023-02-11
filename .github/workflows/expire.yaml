@@ -1,7 +1,7 @@
 name: Expire states
 on:
-  schedule:
-    - cron: '5 * * * *'
+  #schedule:
+  #  - cron: '5 * * * *'
   workflow_dispatch: {}
 
 jobs:
@@ -64,6 +64,7 @@ jobs:
           
           echo "expired=$expired" >> $GITHUB_OUTPUT
           echo "id=$id" >> $GITHUB_OUTPUT
+          echo "expired_at=$(date -d @expires_at)" >> $GITHUB_OUTPUT
 
       - name: Mark for destroy
         if: ${{ steps.expired.outputs.expired }}
@@ -77,5 +78,6 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           branch: "expire-${{ steps.expired.outputs.id }}"
-          commit-message: "expire ${{ matrix.state_dir }}"
-          title: "Expire ${{ matrix.state_dir }}"
+          commit-message: "destroy ${{ matrix.state_dir }}"
+          body: "${{ matrix.state_dir }} expired at ${{ steps.expired.outputs.expired_at }}"
+          title: "Destroy ${{ matrix.state_dir }}"
