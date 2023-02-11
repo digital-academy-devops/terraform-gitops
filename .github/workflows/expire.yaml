@@ -23,7 +23,8 @@ jobs:
         shell: bash
         run: |
           apt update && apt install -y jq
-          echo "states_json=$(find $STATES_DIR -type f -name .expires_at | jq -R . | jq -s .)"
+          states=$(find $STATES_DIR -type f -name .expires_at | jq -R . | jq -sc .)
+          echo "states_json=$states" >> $GITHUB_OUTPUT
   
   expire:
     runs-on: ubuntu-latest
