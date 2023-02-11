@@ -76,6 +76,7 @@ jobs:
         run: |
           cd ${{ matrix.state_dir }}
           echo "$(date)" > .destroy
+          rm .expires_at
 
       - name: Create PR
         if: steps.expired.outputs.expired == 'true'
