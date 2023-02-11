@@ -1,0 +1,85 @@
+name: Expire states
+on:
+  schedule:
+    - cron: '5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+
+  get-expired:
+    runs-on: ubuntu-latest
+    outputs:
+      namesJson: ${{ steps.expired.outputs.namesJson }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/configure-yc-cli
+        with:
+          token: ${{ secrets.YC_TOKEN }}
+          cloud_id: ${{ secrets.YC_CLOUD }}
+
+      - name: Install yq
+        shell: bash
+        run: |
+          sudo apt update && sudo apt install -y wget
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+      - id: expired
+        shell: bash
+        run: |
+          set -x
+          namesJson=$(yc resource-manager folder list --format json | NOW=$(date '+%s') jq  '.[] | select(.labels.expires_at) | select( .labels.expires_at|tonumber <= (env.NOW|tonumber) ) | .name' | jq -sc .)
+          echo "namesJson=$namesJson" >> $GITHUB_OUTPUT
+
+    expire:
+      runs-on: ubuntu-latest
+      needs:
+        - get-expired
+      strategy:
+        fail-fast: true
+        matrix:
+          folder: ${{ fromJson(needs.get-expired.outputs.namesJson ) }}
+      steps:
+        - name: expiring ${{ matrix.folder }}
+          run: |
+            echo expired
+
+  expire:
+    runs-on: ubuntu-latest
+    env:
+      STATES_DIR: states
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: get-states
+        shell: bash
+        run: |
+          apt update && apt install -y jq
+          echo "states_json=$(find $STATES_DIR -type f -name .expires_at | jq -R . | jq -s .)"
+
+      - id: expire
+        shell: bash
+        name: Check expiration for ${{ matrix.state_dir }}
+        matrix:
+          state_dir: ${{ fromJson(needs.get-states.outputs.states_json) }}
+        run: |
+          cd ${{ matrix.state_dir }}
+          now=$(date '+%s')
+          expires_at=$(<$file)
+        
+          difference=$(( $expires_at - $now ))
+          
+          if [ $difference -le 0 ]; then
+            echo "${{ matrix.state_dir }} expired"
+          fi
+
+          
+
