@@ -118,7 +118,7 @@ jobs:
     needs:
       - get-changed-state
       - get-operation
-      - apply
+      #- apply
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
