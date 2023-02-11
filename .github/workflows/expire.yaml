@@ -47,7 +47,7 @@ jobs:
         run: |
           cd ${{ matrix.state_dir }}
           now=$(date '+%s')
-          expires_at=$(<$file)
+          expires_at=$(<.expires_at)
         
           if [ -n "$expires_at" ]; then
             difference=$(( $expires_at - $now ))
