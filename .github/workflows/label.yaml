@@ -32,11 +32,12 @@ jobs:
         with:
           state_dir: ${{ steps.changed-state.outputs.dir }}
 
-      - id: expiration
+      - name: Expiration labels
+        id: expiration
         shell: bash
         run: |
           now=$(date '+%s')
-          expires_at=${{ steps.expires-at.outputs.expires-at }}
+          expires_at=${{ steps.expires-at.outputs.expires_at }}
           label=''
           
           if [[ "$expires_at" == 'never' ]]; then

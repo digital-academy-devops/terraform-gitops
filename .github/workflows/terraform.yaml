@@ -133,10 +133,10 @@ jobs:
 
       - id: save-expiration
         shell: bash
-        if: ${{ steps.expires-at.outputs.expires-at != 'never' }}
+        if: ${{ steps.expires-at.outputs.expires_at != 'never' }}
         run: |
           cd ${{ needs.get-changed-state.outputs.dir }}
-          echo "${{ steps.expires-at.outputs.expires-at }}" > .expires_at
+          echo "${{ steps.expires-at.outputs.expires_at }}" > .expires_at
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
