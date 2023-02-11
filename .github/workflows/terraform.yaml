@@ -110,26 +110,30 @@ jobs:
           apply_changes: "true"
 
       - name: clean workspace
+        if: needs.get-operation.outputs.operation == 'apply'
         uses: jstone28/runner-workspace-cleaner@v1.0.0
 
       - name: Checkout Code
+        if: needs.get-operation.outputs.operation == 'apply'
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_TOKEN }}
 
       - id: expires-at
+        if: needs.get-operation.outputs.operation == 'apply'
         uses: ./.github/actions/expires-at
         with:
           state_dir: ${{ needs.get-changed-state.outputs.dir }}
 
       - id: save-expiration
         shell: bash
-        if: ${{ steps.expires-at.outputs.expires_at != 'never' }}
+        if: needs.get-operation.outputs.operation == 'apply' && steps.expires-at.outputs.expires_at != 'never'
         run: |
           cd ${{ needs.get-changed-state.outputs.dir }}
           echo "${{ steps.expires-at.outputs.expires_at }}" > .expires_at
 
       - uses: stefanzweifel/git-auto-commit-action@v4
+        if: needs.get-operation.outputs.operation == 'apply'
         with:
           commit_message: "ci: set expires_at for ${{ needs.get-changed-state.outputs.dir }} [skip plan]"
 
