@@ -61,7 +61,10 @@ jobs:
           fi
           
           id=${STATE_DIR/\//-}
-          expired_ts=$(date -d "@$expires_at" | echo "unknown")
+          
+          if [ -n "$expires_at" ]; then
+            expired_ts=$(date -d "@$expires_at")
+          fi
           
           echo "expired=$expired" >> $GITHUB_OUTPUT
           echo "id=$id" >> $GITHUB_OUTPUT
