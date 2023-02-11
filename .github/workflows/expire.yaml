@@ -68,14 +68,14 @@ jobs:
           echo "expired_at=$ts" >> $GITHUB_OUTPUT
 
       - name: Mark for destroy
-        if: ${{ steps.expired.outputs.expired  == "true" }}
+        if: steps.expired.outputs.expired == 'true'
         shell: bash
         run: |
           cd ${{ matrix.state_dir }}
           echo "$(date)" > .destroy
 
       - name: Create PR
-        if: ${{ steps.expired.outputs.expired  == "true" }}
+        if: steps.expired.outputs.expired == 'true'
         uses: peter-evans/create-pull-request@v4
         with:
           branch: "expire-${{ steps.expired.outputs.id }}"
