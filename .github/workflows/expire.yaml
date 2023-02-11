@@ -6,10 +6,12 @@ on:
 
 jobs:
 
-  expire:
+  get-states:
     runs-on: ubuntu-latest
     env:
       STATES_DIR: states
+    outputs:
+      states_json: ${{ steps.get-states.outputs.states_json }}
     steps:
       - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
@@ -22,13 +24,18 @@ jobs:
         run: |
           apt update && apt install -y jq
           echo "states_json=$(find $STATES_DIR -type f -name .expires_at | jq -R . | jq -s .)"
-
+  
+  expire:
+    needs:
+      - get-states
+    strategy:
+      matrix:
+        state_dir: ${{ fromJson(needs.get-states.outputs.states_json) }}
+    steps:
       - id: expire
         shell: bash
         name: Check expiration for ${{ matrix.state_dir }}
-        strategy:
-          matrix:
-            state_dir: ${{ fromJson(needs.get-states.outputs.states_json) }}
+
         run: |
           cd ${{ matrix.state_dir }}
           now=$(date '+%s')
