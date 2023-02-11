@@ -26,6 +26,7 @@ jobs:
           echo "states_json=$(find $STATES_DIR -type f -name .expires_at | jq -R . | jq -s .)"
   
   expire:
+    runs-on: ubuntu-latest
     needs:
       - get-states
     strategy:
