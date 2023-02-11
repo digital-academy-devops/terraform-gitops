@@ -63,7 +63,7 @@ jobs:
           id=${STATE_DIR/\//-}
           
           echo "expired=$expired" >> $GITHUB_OUTPUT
-          echo "id=$${x/\//-}" >> $GITHUB_OUTPUT
+          echo "id=$id" >> $GITHUB_OUTPUT
 
       - name: Mark for destroy
         if: ${{ steps.expired.outputs.expired }}
