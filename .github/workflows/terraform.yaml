@@ -110,21 +110,12 @@ jobs:
           apply_changes: "true"
 
       - name: clean workspace
-        if: always()
-        uses: jstone28/runner-workspace-cleaner@v1.0.0
-
-  set-expiration:
-    runs-on: ubuntu-latest
-    needs:
-      - get-changed-state
-      - get-operation
-      - apply
-    steps:
-      - name: clean workspace
         uses: jstone28/runner-workspace-cleaner@v1.0.0
 
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
 
       - id: expires-at
         uses: ./.github/actions/expires-at
