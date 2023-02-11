@@ -37,13 +37,16 @@ jobs:
         run: |
           now=$(date '+%s')
           expires_at=${{ steps.expires-at.outputs.expires-at }}
+          label=''
           
-          difference=$(( ( $expires_at - $now ) / 3600 ))
-          
-          label=""
-          
-          if [ $difference -gt $EXPIRATION_LIMIT_HOURS ]; then
-            label='hi-expiration-time'
+          if [[ "$expires_at" == 'never' ]]; then
+            label='never-expires'
+          else
+            difference=$(( ( $expires_at - $now ) / 3600 ))
+            
+            if [ $difference -gt $EXPIRATION_LIMIT_HOURS ]; then
+              label='hi-expiration-time'
+            fi
           fi
           
           echo "label=${label}" >> $GITHUB_OUTPUT
@@ -53,6 +56,7 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           labels: |
             hi-expiration-time
+            never-expires
             apply
             destroy
 

@@ -132,8 +132,9 @@ jobs:
         with:
           state_dir: ${{ needs.get-changed-state.outputs.dir }}
 
-      - name:
+      - id: save-expiration
         shell: bash
+        if: ${{ steps.expires-at.outputs.expires-at != 'never' }}
         run: |
           cd ${{ needs.get-changed-state.outputs.dir }}
           echo "${{ steps.expires-at.outputs.expires-at }}" > .expires_at

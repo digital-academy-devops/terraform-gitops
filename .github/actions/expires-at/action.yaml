@@ -22,5 +22,5 @@ runs:
         if [ -e .ttl ]; then
           ttl=$(<.ttl)
         fi
-
+        
         echo "expires_at=$(date -d "+$ttl" '+%s')" >> $GITHUB_OUTPUT
