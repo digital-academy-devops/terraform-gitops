@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           apt update && apt install -y jq
-          states=$(find $STATES_DIR -type f -name .expires_at | jq -R . | jq -sc .)
+          states=$(find $STATES_DIR -type f -name .expires_at | xargs -n1 dirname | jq -R . | jq -sc .)
           echo "states_json=$states" >> $GITHUB_OUTPUT
   
   expire:
@@ -43,11 +43,12 @@ jobs:
           now=$(date '+%s')
           expires_at=$(<$file)
         
-          difference=$(( $expires_at - $now ))
-          
-          if [ $difference -le 0 ]; then
-            echo "${{ matrix.state_dir }} expired"
+          if [ -n "$expires_at" ]; then
+            difference=$(( $expires_at - $now ))
+            
+            if [ $difference -le 0 ]; then
+              echo "${{ matrix.state_dir }} expired"
+            fi
           fi
-
           
 
