@@ -40,21 +40,42 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - id: expire
+      - id: expired
         shell: bash
         name: Check expiration for ${{ matrix.state_dir }}
-
+        env:
+          STATE_DIR: ${{ matrix.state_dir }}
         run: |
-          cd ${{ matrix.state_dir }}
+          cd $STATE_DIR
           now=$(date '+%s')
           expires_at=$(<.expires_at)
-        
+          expired="false"
+          
           if [ -n "$expires_at" ]; then
             difference=$(( $expires_at - $now ))
             
             if [ $difference -le 0 ]; then
-              echo "${{ matrix.state_dir }} expired"
+              echo "$STATE_DIR expired"
+              expired="true"
             fi
           fi
           
+          id=${STATE_DIR/\//-}
+          
+          echo "expired=$expired" >> $GITHUB_OUTPUT
+          echo "id=$${x/\//-}" >> $GITHUB_OUTPUT
 
+      - name: Mark for destroy
+        if: ${{ steps.expired.outputs.expired }}
+        shell: bash
+        run: |
+          cd ${{ matrix.state_dir }}
+          touch .destroy
+
+      - name: Create PR
+        if: ${{ steps.expired.outputs.expired }}
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: "expire-${{ steps.expired.outputs.id }}"
+          commit-message: "expire ${{ matrix.state_dir }}"
+          title: "Expire ${{ matrix.state_dir }}"
