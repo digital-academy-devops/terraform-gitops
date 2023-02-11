@@ -6,7 +6,7 @@ inputs:
 outputs:
   expires_at:
     description: ""
-    value: ${{ steps.expires-at.outputs.expires-at }}
+    value: ${{ steps.expires-at.outputs.expires_at }}
 runs:
   using: "composite"
   steps:
@@ -15,7 +15,7 @@ runs:
         DEFAULT_TTL: "4 hours"
       shell: bash
       run: |
-        set -e
+        set -ex
         cd ${{ inputs.state_dir }}
 
         ttl="$DEFAULT_TTL"

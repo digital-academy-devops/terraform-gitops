@@ -140,7 +140,7 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "ci: set expires_at for [skip plan]"
+          commit_message: "ci: set expires_at for ${{ needs.get-changed-state.outputs.dir }} [skip plan]"
 
       - name: clean workspace
         if: always()
