@@ -1,0 +1,163 @@
+name: Run terraform
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - "states/**/*"
+  pull_request: {}
+  workflow_dispatch:
+    inputs:
+      states_dir:
+        description: states directory path"
+        default: "states/<folder_name>"
+        required: true
+      operation:
+        description: operation to perform
+        required: true
+        type: choice
+        default: "apply"
+        options:
+          - "apply"
+          - "destroy"
+jobs:
+  get-changed-state:
+    runs-on: ubuntu-latest
+    if: ${{ ! contains(github.event.head_commit.message, '[skip build]') }}
+    outputs:
+      dir: ${{ github.event.inputs.states_dir || steps.changed-state.outputs.dir }}
+    env:
+      states_dir: states
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: changed-state
+        uses: ./.github/actions/changes-state
+
+  get-operation:
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-state
+    outputs:
+      operation: ${{ github.event.inputs.operation || steps.operation.outputs.operation }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: operation
+        uses: ./.github/actions/operation
+        with:
+          state_dir: ${{ needs.get-changed-state.outputs.dir }}
+
+
+  plan:
+    environment: plan
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-state
+      - get-operation
+    if: ${{ needs.get-changed-state.outputs.dir && (! contains(github.event.head_commit.message, '[skip plan]')) }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/terraform
+        with:
+          directory: ${{ needs.get-changed-state.outputs.dir }}
+          operation: ${{ needs.get-operation.outputs.operation }}
+          sa_key: ${{ secrets.SA_KEY }}
+          state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          github_token: ${{ secrets.GH_TOKEN }}
+
+      - name: clean workspace
+        if: always()
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+  notify:
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-state
+      - get-operation
+      - plan
+    if: ${{ needs.get-changed-state.outputs.dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)) }}
+    steps:
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Terraform operation planned to start, review it:
+            
+            States directory: ${{ needs.get-changed-state.outputs.dir }}
+            Operation: ${{ needs.get-operation.outputs.operation }}
+            
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  apply:
+    environment: apply
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-state
+      - get-operation
+      - plan
+    if: ${{ needs.get-changed-state.outputs.dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)) }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/terraform
+        with:
+          directory: ${{ needs.get-changed-state.outputs.dir }}
+          operation: ${{ needs.get-operation.outputs.operation }}
+          sa_key: ${{ secrets.SA_KEY }}
+          state_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          state_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          github_token: ${{ secrets.GH_TOKEN }}
+          apply_changes: "true"
+
+      - name: clean workspace
+        if: needs.get-operation.outputs.operation == 'apply'
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        if: needs.get-operation.outputs.operation == 'apply'
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - id: expires-at
+        if: needs.get-operation.outputs.operation == 'apply'
+        uses: ./.github/actions/expires-at
+        with:
+          state_dir: ${{ needs.get-changed-state.outputs.dir }}
+
+      - id: save-expiration
+        shell: bash
+        if: needs.get-operation.outputs.operation == 'apply' && steps.expires-at.outputs.expires_at != 'never'
+        run: |
+          cd ${{ needs.get-changed-state.outputs.dir }}
+          echo "${{ steps.expires-at.outputs.expires_at }}" > .expires_at
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: needs.get-operation.outputs.operation == 'apply'
+        with:
+          commit_message: "ci: set expires_at for ${{ needs.get-changed-state.outputs.dir }} [skip plan]"
+
+      - name: clean workspace
+        if: always()
+        uses: jstone28/runner-workspace-cleaner@v1.0.0

@@ -1,0 +1,24 @@
+name: "Get changed state directory"
+description: ""
+inputs:
+  state_dir:
+    description: "path to state direcroty"
+    required: true
+outputs:
+  operation:
+    description: ""
+    value: ${{ steps.operation.outputs.operation }}
+runs:
+  using: "composite"
+  steps:
+    - id: operation
+      shell: bash
+      run: |
+        cd ${{ inputs.state_dir }}
+        if [ -e .destroy ]; then
+          operation="destroy"
+        else
+          operation="apply"
+        fi
+
+        echo "operation=$operation" >> $GITHUB_OUTPUT

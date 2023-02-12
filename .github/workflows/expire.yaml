@@ -1,0 +1,90 @@
+name: Expire states
+on:
+  #schedule:
+  #  - cron: '5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+
+  get-states:
+    runs-on: ubuntu-latest
+    env:
+      STATES_DIR: states
+    outputs:
+      states_json: ${{ steps.get-states.outputs.states_json }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: get-states
+        shell: bash
+        run: |
+          apt update && apt install -y jq
+          states=$(find $STATES_DIR -type f -name .expires_at | xargs -n1 dirname | jq -R . | jq -sc .)
+          echo "states_json=$states" >> $GITHUB_OUTPUT
+  
+  expire:
+    runs-on: ubuntu-latest
+    needs:
+      - get-states
+    strategy:
+      matrix:
+        state_dir: ${{ fromJson(needs.get-states.outputs.states_json) }}
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: expired
+        shell: bash
+        name: Check expiration for ${{ matrix.state_dir }}
+        env:
+          STATE_DIR: ${{ matrix.state_dir }}
+        run: |
+          cd $STATE_DIR
+          now=$(date '+%s')
+          expires_at=$(<.expires_at)
+          expired="false"
+          
+          if [ -n "$expires_at" ]; then
+            difference=$(( $expires_at - $now ))
+            
+            if [ $difference -le 0 ]; then
+              echo "$STATE_DIR expired"
+              expired="true"
+            fi
+          fi
+          
+          id=${STATE_DIR/\//-}
+          
+          if [ -n "$expires_at" ]; then
+            expired_ts=$(date -d "@$expires_at")
+          fi
+          
+          echo "expired=$expired" >> $GITHUB_OUTPUT
+          echo "id=$id" >> $GITHUB_OUTPUT
+          echo "expired_at=$expired_ts" >> $GITHUB_OUTPUT
+
+      - name: Mark for destroy
+        if: steps.expired.outputs.expired == 'true'
+        shell: bash
+        run: |
+          cd ${{ matrix.state_dir }}
+          echo "$(date)" > .destroy
+          rm .expires_at
+
+      - name: Create PR
+        if: steps.expired.outputs.expired == 'true'
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: "expire-${{ steps.expired.outputs.id }}"
+          commit-message: "destroy ${{ matrix.state_dir }}"
+          body: "${{ matrix.state_dir }} expired at ${{ steps.expired.outputs.expired_at }}"
+          title: "Destroy ${{ matrix.state_dir }}"
+          labels: |
+            expired

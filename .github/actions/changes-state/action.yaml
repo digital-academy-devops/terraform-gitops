@@ -1,0 +1,45 @@
+name: "Get changed state directory"
+description: ""
+inputs:
+  states_dir:
+    description: "path to directory with states"
+    required: true
+    default: "states"
+outputs:
+  dir:
+    description: ""
+    value: ${{ steps.changed-state.outputs.dir }}
+runs:
+  using: "composite"
+  steps:
+
+    - name: Get state directories
+      id: changed-files
+      uses: tj-actions/changed-files@v35
+      with:
+        files: ${{ inputs.states_dir }}
+        dir_names: true
+        dir_names_max_depth: 2
+
+    - id: changed-state
+      shell: bash
+      run: |
+        set -ex 
+        dir=""
+
+        changed_dirs=(${{ steps.changed-files.outputs.all_changed_and_modified_files }})
+
+        if [ ${#changed_dirs[@]} -eq 0 ]; then
+          echo "No state changes found"
+          exit 0
+        else 
+
+          if [ ${#changed_dirs[@]} -gt 1 ]; then
+            echo "⛔️Only one state change per run is supported, split your code changes."
+            exit 1
+          fi
+
+          changed_state=${changed_dirs[0]}
+        fi
+         
+        echo "dir=$changed_state" >> $GITHUB_OUTPUT

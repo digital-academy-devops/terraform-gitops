@@ -1,0 +1,69 @@
+name: Label PR
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+
+  labels:
+    env:
+      EXPIRATION_LIMIT_HOURS: 8
+    runs-on: ubuntu-latest
+    steps:
+      - name: clean workspace
+        uses: jstone28/runner-workspace-cleaner@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - id: changed-state
+        uses: ./.github/actions/changes-state
+
+      - id: operation
+        uses: ./.github/actions/operation
+        with:
+          state_dir: ${{ steps.changed-state.outputs.dir }}
+
+      - id: expires-at
+        uses: ./.github/actions/expires-at
+        with:
+          state_dir: ${{ steps.changed-state.outputs.dir }}
+
+      - name: Expiration labels
+        id: expiration
+        shell: bash
+        run: |
+          now=$(date '+%s')
+          expires_at=${{ steps.expires-at.outputs.expires_at }}
+          label=''
+          
+          if [[ "$expires_at" == 'never' ]]; then
+            label='never-expires'
+          else
+            difference=$(( ( $expires_at - $now ) / 3600 ))
+            
+            if [ $difference -gt $EXPIRATION_LIMIT_HOURS ]; then
+              label='hi-expiration-time'
+            fi
+          fi
+          
+          echo "label=${label}" >> $GITHUB_OUTPUT
+
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: |
+            hi-expiration-time
+            never-expires
+            apply
+            destroy
+
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: |
+            ${{ steps.expiration.outputs.label }}
+            ${{ steps.operation.outputs.operation }}
