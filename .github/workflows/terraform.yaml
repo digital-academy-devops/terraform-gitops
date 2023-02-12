@@ -84,6 +84,23 @@ jobs:
         if: always()
         uses: jstone28/runner-workspace-cleaner@v1.0.0
 
+  notify:
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-state
+      - get-operation
+      - plan
+    if: ${{ needs.get-changed-state.outputs.dir && ( contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)) }}
+    steps:
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Terraform operation planned to starts. Please review it.
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
   apply:
     environment: apply
     runs-on: ubuntu-latest
