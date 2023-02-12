@@ -58,12 +58,10 @@ resource "github_branch_protection" "main" {
 
   required_pull_request_reviews {
     dismiss_stale_reviews  = true
-    restrict_dismissals    = true
     pull_request_bypassers = [
       data.github_user.admin.node_id,
     ]
     require_code_owner_reviews = true
-    require_last_push_approval = true
   }
 
 }
