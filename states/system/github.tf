@@ -1,9 +1,9 @@
 data "github_repository" "terraform-gitops" {
-  full_name = "mostashkin/terraform-gitops"
+  full_name = "digital-academy-devops/terraform-gitops"
 }
 
 data "github_user" "admin" {
-  username = "mostashkin"
+  username = "digital-academy-devops"
 }
 
 module "plan_env" {
