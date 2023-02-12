@@ -82,6 +82,7 @@ jobs:
         if: steps.expired.outputs.expired == 'true'
         uses: peter-evans/create-pull-request@v4
         with:
+          token: ${{ secrets.GH_TOKEN }}
           branch: "expire-${{ steps.expired.outputs.id }}"
           commit-message: "destroy ${{ matrix.state_dir }}"
           body: "${{ matrix.state_dir }} expired at ${{ steps.expired.outputs.expired_at }}"
