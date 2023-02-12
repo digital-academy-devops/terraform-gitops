@@ -25,7 +25,7 @@
 1. Определите все необходимые ресурсы в [коде terraform внутри созданой директории](https://github.com/digital-academy-devops/terraform-gitops/tree/readme/states/mostashkin).
 1. [Определите TTL каталога](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/mostashkin/.ttl) при помощи [файла метаданных](../README.md#метаданные) `.ttl`
 1. [Добавьте себя в codeowners](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/.github/CODEOWNERS#L6) для создаваемой директории. 
-Главным образом это необходимо для добавления вас в автоматически создаваемые PR для удаления ресурсов по истечении срока жизни каталога.
+Главным образом это необходимо для добавления вас в [автоматически создаваемые PR](https://github.com/digital-academy-devops/terraform-gitops/pull/21/files) для удаления ресурсов по истечении срока жизни каталога.
 1. [Создайте PR](https://github.com/digital-academy-devops/terraform-gitops/pull/18) и объедените его, убедитесь что изменения применены без ошибок. 
 
 > Пример PR: https://github.com/digital-academy-devops/terraform-gitops/pull/18
