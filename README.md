@@ -49,4 +49,4 @@
   
   Создаётся автоматически в [Run terraform](#workflows) после выполнения операции `apply` на основании `.ttl`.
 
-  Добавляется [Expire states](#workflows)
+  Добавляется [Expire states](#workflows).
