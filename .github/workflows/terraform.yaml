@@ -98,7 +98,11 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Terraform operation planned to starts. Please review it.
+            Terraform operation planned to start, review it:
+            
+            States directory: ${{ needs.get-changed-state.outputs.dir }}
+            Operation: ${{ needs.get-operation.outputs.operation }}
+            
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
   apply:
