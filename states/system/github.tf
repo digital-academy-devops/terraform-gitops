@@ -10,6 +10,10 @@ data "github_user" "mostashkin" {
   username = "mostashkin"
 }
 
+data "github_user" "ychacarr" {
+  username = "ychacarr"
+}
+
 module "plan_env" {
   source             = "./modules/github-tf-environment"
   environment        = "plan"
@@ -28,7 +32,8 @@ module "apply_env" {
   repository  = data.github_repository.terraform-gitops.name
   reviewers = [
     data.github_user.admin.id,
-    data.github_user.mostashkin.id
+    data.github_user.mostashkin.id,
+    data.github_user.ychacarr.id
   ]
   secrets = {
     AWS_ACCESS_KEY_ID     = module.terraform-sa.static-key
