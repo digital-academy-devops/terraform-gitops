@@ -71,7 +71,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - uses: ./.github/actions/terraform
+      - name: Run terraform plan (Review changes here)
+        uses: ./.github/actions/terraform
         with:
           directory: ${{ needs.get-changed-state.outputs.dir }}
           operation: ${{ needs.get-operation.outputs.operation }}
@@ -120,7 +121,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - uses: ./.github/actions/terraform
+      - name: Run terraform ${{ needs.get-operation.outputs.operation }} (Review changes here)
+        uses: ./.github/actions/terraform
         with:
           directory: ${{ needs.get-changed-state.outputs.dir }}
           operation: ${{ needs.get-operation.outputs.operation }}
@@ -152,6 +154,8 @@ jobs:
         run: |
           cd ${{ needs.get-changed-state.outputs.dir }}
           echo "${{ steps.expires-at.outputs.expires_at }}" > .expires_at
+          echo "Removing .destroy marker"
+          rm -v .destroy || /bin/true
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: needs.get-operation.outputs.operation == 'apply'
