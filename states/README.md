@@ -14,7 +14,7 @@
 
 1. [Добавьте ресурс](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/system/folder.tf#L1) для создания каталога в системном состоянии - [states/system/folder.tf](../states/system/folder.tf)
 1. [Добавьте output](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/system/folder.tf#L9) с id каталога для последующего использования в конфигурации провайдера.
-1. [Создайте PR](https://github.com/digital-academy-devops/terraform-gitops/pull/17) и объедените его, убедитесь что изменения применены без ошибок.
+1. [Создайте PR](https://github.com/digital-academy-devops/terraform-gitops/pull/17) и объедините его, убедитесь что изменения применены без ошибок.
 
 > Пример PR: https://github.com/digital-academy-devops/terraform-gitops/pull/17
 
@@ -28,15 +28,15 @@
 1. [Добавьте себя в codeowners](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/.github/CODEOWNERS#L6) для создаваемой директории. 
 
 Главным образом, это необходимо для добавления вас в [автоматически создаваемые PR](https://github.com/digital-academy-devops/terraform-gitops/pull/21) для удаления ресурсов по истечении срока жизни директории.
-1. [Создайте PR](https://github.com/digital-academy-devops/terraform-gitops/pull/18) и объедените его, убедитесь что изменения применены без ошибок. 
+1. [Создайте PR](https://github.com/digital-academy-devops/terraform-gitops/pull/18) и объедините его, убедитесь что изменения применены без ошибок. 
 
 > Пример PR: https://github.com/digital-academy-devops/terraform-gitops/pull/18
 
 ### Применение изменений директории
-- Осуществляется автоматически при объеденении изменений в `main`.
+- Осуществляется автоматически при объединении изменений в `main`.
 - Без изменения кода через ручной запуск [Run terraform](https://github.com/digital-academy-devops/terraform-gitops/actions/workflows/terraform.yaml)
 
 ### Удаление ресурсов для директории
 
-- Осуществляется автоматически при объеденении изменений в `main` при наличии в директории [файла метаданных](../README.md#метаданные) `.destroy`.
+- Осуществляется автоматически при объединении изменений в `main` при наличии в директории [файла метаданных](../README.md#метаданные) `.destroy`.
 - Через ручной запуск [Run terraform](https://github.com/digital-academy-devops/terraform-gitops/actions/workflows/terraform.yaml)
