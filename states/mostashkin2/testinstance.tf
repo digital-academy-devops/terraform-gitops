@@ -19,7 +19,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-a.id
+    subnet_id = data.terraform_remote_state.system.outputs.default-subnets[0]
     nat       = true
   }
 
