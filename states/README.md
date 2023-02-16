@@ -2,9 +2,9 @@
 
 ## Общие положения
 - Вся инфраструктура создаётся в едином [облаке](https://cloud.yandex.ru/docs/resource-manager/concepts/resources-hierarchy#cloud) - [states/system/setup.tf](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/system/setup.tf#L44)
-- Каждый участник добавляет инфраструктуру в отдельном [каталоге](https://cloud.yandex.ru/docs/resource-manager/concepts/resources-hierarchy#folder) внутри облака.
-- В качестве имени каталога используйте свои имя и фамилию, например `mostashkin`.
-- Для каждого каталога используется отдельная директория состояний, например [./mostashkin]
+- Каждый участник добавляет инфраструктуру в отдельном [каталоге](https://cloud.yandex.ru/docs/resource-manager/concepts/resources-hierarchy#folder) внутри `облака`.
+- В качестве имени `каталога` используйте свои имя и фамилию, например `mostashkin`.
+- Для каждого `каталога` используется отдельная директория состояний, например [states/mostashkin](./mostashkin)
 - Применение любых изменений требует ручного подтверждения администратора.
 - Каждый PR может содержать изменения только для **одной** директории состояний.
 
@@ -21,8 +21,8 @@
 ### Создание директории для каталога
 
 1. Добавьте директорию в [states](../states)
-1. В конфигурации провайдера, [используйте](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/mostashkin/setup.tf#L42) output c id каталога, созданный ранее.
-1. [В конфигурации состояния](https://github.com/digital-academy-devops/terraform-gitops/blob/main/states/mostashkin/setup.tf#L16), установите имя вашего каталога/директории для корректного хранения его состояния внутри [бакета с состояниями](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/mostashkin/setup.tf#L14) - `states/folders/<CATALOG_NAME>/terraform.tfstate`.
+1. В конфигурации провайдера, [используйте](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/mostashkin/setup.tf#L42) output c id `каталога`, созданный ранее.
+1. [В конфигурации состояния](https://github.com/digital-academy-devops/terraform-gitops/blob/main/states/mostashkin/setup.tf#L16), установите имя вашего `каталога`/директории для корректного хранения его состояния внутри [бакета с состояниями](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/mostashkin/setup.tf#L14) - `states/folders/<CATALOG_NAME>/terraform.tfstate`.
 1. Определите все необходимые ресурсы в [коде terraform внутри созданой директории](https://github.com/digital-academy-devops/terraform-gitops/tree/readme/states/mostashkin).
 1. [Определите TTL каталога](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/states/mostashkin/.ttl) при помощи [файла метаданных](../README.md#метаданные) `.ttl`
 1. [Добавьте себя в codeowners](https://github.com/digital-academy-devops/terraform-gitops/blob/readme/.github/CODEOWNERS#L6) для создаваемой директории. 
