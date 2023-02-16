@@ -9,3 +9,15 @@ resource "yandex_resourcemanager_folder" "mostashkin" {
 output "mostashkin-folder-id" {
   value = yandex_resourcemanager_folder.mostashkin.id
 }
+
+resource "yandex_resourcemanager_folder" "mostashkin2" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "mostashkin2"
+  labels = {
+    owner = "mikhailostashkin"
+  }
+}
+
+output "mostashkin2-folder-id" {
+  value = yandex_resourcemanager_folder.mostashkin2.id
+}
