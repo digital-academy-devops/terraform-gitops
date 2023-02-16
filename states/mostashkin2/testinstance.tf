@@ -19,7 +19,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   network_interface {
-    subnet_id = data.terraform_remote_state.system.outputs.default-subnets[0]
+    subnet_id = data.terraform_remote_state.system.outputs.default-subnets[2]
     nat       = true
   }
 
@@ -35,15 +35,4 @@ resource "yandex_compute_instance" "testvm" {
 
 data "yandex_compute_image" "my_image" {
   family = "ubuntu-2204-lts"
-}
-
-
-resource "yandex_vpc_network" "default" {
-  name = "default"
-}
-
-resource "yandex_vpc_subnet" "subnet-a" {
-  v4_cidr_blocks = ["10.2.0.0/16"]
-  zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.default.id
 }
