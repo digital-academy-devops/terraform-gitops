@@ -31,3 +31,7 @@ output "terraform-viewer-key-json" {
 output "cloud-id" {
   value = data.yandex_resourcemanager_cloud.do-course-1.id
 }
+
+output "default-subnets" {
+  value = data.yandex_vpc_network.default.subnet_ids
+}
