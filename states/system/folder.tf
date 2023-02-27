@@ -21,6 +21,7 @@ resource "yandex_resourcemanager_folder" "glebedev" {
 output "glebedev-folder-id" {
   value = yandex_resourcemanager_folder.glebedev.id
 }
+
 resource "yandex_resourcemanager_folder" "robonen" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "robonen"
