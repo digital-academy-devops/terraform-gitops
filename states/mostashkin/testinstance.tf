@@ -1,9 +1,11 @@
 locals {
   zone = "ru-central1-a"
+  group_prefix = testinstance
 }
 
 resource "yandex_compute_instance" "testvm" {
-  name        = "testinstance"
+  count = 5
+  name        = "${local.group_prefix}-${count.index}"
   platform_id = "standard-v1"
 
   resources {
