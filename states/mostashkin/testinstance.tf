@@ -1,6 +1,6 @@
 locals {
   zone = "ru-central1-a"
-  group_prefix = testinstance
+  group_prefix = "testinstance"
 }
 
 resource "yandex_compute_instance" "testvm" {
