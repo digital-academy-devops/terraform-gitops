@@ -3,7 +3,7 @@ resource "yandex_lb_network_load_balancer" "lb" {
 
   listener {
     name = "http"
-    port = 8080
+    port = 80
     external_address_spec {
       ip_version = "ipv4"
     }
@@ -14,7 +14,7 @@ resource "yandex_lb_network_load_balancer" "lb" {
     healthcheck {
       name = "healthcheck"
         http_options {
-          port = 8080
+          port = 80
           path = "/"
         }
     }
