@@ -3,5 +3,5 @@ output "ips" {
 }
 
 output "lb" {
-  value = yandex_lb_network_load_balancer.lb.listener.*.external_address_spec[0].address
+  value = yandex_lb_network_load_balancer.lb.listener[0].external_address_spec.address
 }
