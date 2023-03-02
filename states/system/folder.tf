@@ -33,3 +33,15 @@ resource "yandex_resourcemanager_folder" "robonen" {
 output "robonen-folder-id" {
   value = yandex_resourcemanager_folder.robonen.id
 }
+
+resource "yandex_resourcemanager_folder" "amalkov" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "amalkov"
+  labels = {
+    owner = "malkovanton"
+  }
+}
+
+output "amalkov-folder-id" {
+  value = yandex_resourcemanager_folder.amalkov.id
+}
