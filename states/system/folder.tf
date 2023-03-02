@@ -10,26 +10,16 @@ output "mostashkin-folder-id" {
   value = yandex_resourcemanager_folder.mostashkin.id
 }
 
-resource "yandex_resourcemanager_folder" "glebedev" {
+resource "yandex_resourcemanager_folder" "amalkov" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
-  name     = "glebedev"
+  name     = "amalkov"
   labels = {
-    owner = "lebedevgeorgii"
+    owner = "malkovanton"
   }
 }
 
-output "glebedev-folder-id" {
-  value = yandex_resourcemanager_folder.glebedev.id
+output "amalkov-folder-id" {
+  value = yandex_resourcemanager_folder.amalkov.id
 }
 
-resource "yandex_resourcemanager_folder" "robonen" {
-  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
-  name     = "robonen"
-  labels = {
-    owner = "andrewrobonen"
-  }
-}
 
-output "robonen-folder-id" {
-  value = yandex_resourcemanager_folder.robonen.id
-}
