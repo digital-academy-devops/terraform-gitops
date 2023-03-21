@@ -20,6 +20,21 @@ terraform {
   }
 }
 
+data "terraform_remote_state" "system" {
+  backend   = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    endpoint = "storage.yandexcloud.net"
+    bucket   = "do-course-1-tf"
+    region   = "ru-central1"
+    key      = "states/system/terraform.tfstate"
+
+    skip_region_validation      = true
+    skip_credentials_validation = true
+  }
+}
+
 provider "yandex" {
   zone                     = "ru-central1-a"
   service_account_key_file = "sa_key.json"
