@@ -10,7 +10,8 @@ module "terraform-sa" {
     "storage.editor",
     "vpc.admin",
     "kms.admin",
-    "k8s.admin"
+    "k8s.admin",
+    "k8s.cluster-api.cluster-admin",
   ]
 }
 
@@ -27,6 +28,7 @@ module "terraform-viewer-sa" {
     "vpc.viewer",
     "load-balancer.viewer",
     "kms.viewer",
-    "k8s.viewer"
+    "k8s.viewer",
+    "k8s.cluster-api.cluster-viewer",
   ]
 }
