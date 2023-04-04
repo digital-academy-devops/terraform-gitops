@@ -29,6 +29,6 @@ module "terraform-viewer-sa" {
     "load-balancer.viewer",
     "kms.viewer",
     "k8s.viewer",
-    "k8s.cluster-api.cluster-viewer",
+    "k8s.cluster-api.viewer",
   ]
 }
