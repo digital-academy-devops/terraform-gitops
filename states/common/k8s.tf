@@ -32,6 +32,7 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
     }
 
     security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
+    public_ip = true
   }
   service_account_id      = yandex_iam_service_account.k8s.id
   node_service_account_id = yandex_iam_service_account.k8s.id
