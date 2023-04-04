@@ -1,3 +1,8 @@
+resource "yandex_resourcemanager_folder" "common" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "common"
+}
+
 resource "yandex_resourcemanager_folder" "mostashkin" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "mostashkin"
