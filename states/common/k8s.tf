@@ -10,7 +10,7 @@ data "yandex_vpc_subnet" "default" {
 locals {
   folder_id   = data.terraform_remote_state.system.outputs.common-folder-id
   version = "1.23"
-  sa_name     = "kube_sa"
+  sa_name     = "kube"
 }
 
 resource "yandex_kubernetes_cluster" "k8s-regional" {
