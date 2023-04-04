@@ -8,9 +8,10 @@ data "yandex_vpc_subnet" "default" {
 }
 
 locals {
-  folder_id   = data.terraform_remote_state.system.outputs.common-folder-id
-  version = "1.23"
-  sa_name     = "kube"
+  folder_id = data.terraform_remote_state.system.outputs.common-folder-id
+  cloud_id  = data.terraform_remote_state.system.outputs.cloud-id
+  version   = "1.23"
+  sa_name   = "kube"
 }
 
 resource "yandex_kubernetes_cluster" "k8s-regional" {
@@ -36,8 +37,8 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
   node_service_account_id = yandex_iam_service_account.k8s.id
 
   depends_on = [
-    yandex_resourcemanager_folder_iam_member.k8s-clusters-agent,
-    yandex_resourcemanager_folder_iam_member.vpc-public-admin,
+    yandex_resourcemanager_cloud_iam_binding.k8s-clusters-agent,
+    yandex_resourcemanager_cloud_iam_binding.vpc-public-admin,
     yandex_resourcemanager_folder_iam_member.images-puller
   ]
 
@@ -51,16 +52,16 @@ resource "yandex_iam_service_account" "k8s" {
   description = "K8S regional service account"
 }
 
-resource "yandex_resourcemanager_folder_iam_member" "k8s-clusters-agent" {
-  folder_id = local.folder_id
-  role      = "k8s.clusters.agent"
-  member    = "serviceAccount:${yandex_iam_service_account.k8s.id}"
+resource "yandex_resourcemanager_cloud_iam_binding" "k8s-clusters-agent" {
+  cloud_id = local.cloud_id
+  role     = "k8s.clusters.agent"
+  members  = [ "serviceAccount:${yandex_iam_service_account.k8s.id}" ]
 }
 
-resource "yandex_resourcemanager_folder_iam_member" "vpc-public-admin" {
-  folder_id = local.folder_id
-  role      = "vpc.publicAdmin"
-  member    = "serviceAccount:${yandex_iam_service_account.k8s.id}"
+resource "yandex_resourcemanager_cloud_iam_binding" "vpc-public-admin" {
+  cloud_id = local.cloud_id
+  role     = "vpc.publicAdmin"
+  members  = [ "serviceAccount:${yandex_iam_service_account.k8s.id}" ]
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "images-puller" {
