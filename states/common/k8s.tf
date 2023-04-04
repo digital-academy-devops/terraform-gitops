@@ -114,6 +114,13 @@ resource "yandex_vpc_security_group" "k8s-main-sg" {
     from_port         = 30000
     to_port           = 32767
   }
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow HTTPS"
+    v4_cidr_blocks    = ["0.0.0.0/0"]
+    from_port         = 0
+    to_port           = 443
+  }
   egress {
     protocol          = "ANY"
     description       = "allow all"
