@@ -90,8 +90,10 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
     }
   }
 
-  location {
-    zone =  "ru-central1-a"
+  allocation_policy {
+    location {
+      zone =  "ru-central1-a"
+    }
   }
 
 }
