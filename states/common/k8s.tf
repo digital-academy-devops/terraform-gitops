@@ -184,8 +184,8 @@ resource "yandex_vpc_security_group" "k8s-main-sg" {
     protocol       = "TCP"
     description    = "allow incoming nodeports connections"
     v4_cidr_blocks = ["0.0.0.0/0"]
-    from_port      = 30000
-    to_port        = 32767
+    from_port      = 0
+    to_port        = 65535
   }
   ingress {
     protocol       = "TCP"
