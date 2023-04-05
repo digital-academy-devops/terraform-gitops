@@ -47,6 +47,10 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
   kms_provider {
     key_id = yandex_kms_symmetric_key.kms-key.id
   }
+
+  lifecycle {
+    ignore_changes = [master.regional]
+  }
 }
 
 resource "yandex_kubernetes_node_group" "standard-v2-a" {
