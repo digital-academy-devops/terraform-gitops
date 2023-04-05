@@ -49,7 +49,7 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
   }
 
   lifecycle {
-    ignore_changes = [master.regional]
+    ignore_changes = [ master[0].regional[0] ]
   }
 }
 
