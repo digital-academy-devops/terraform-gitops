@@ -95,7 +95,6 @@ resource "yandex_kubernetes_node_group" "standard-v2" {
         for_each = data.yandex_vpc_subnet.default.*
         content {
           zone      = location.value.zone
-          subnet_id = location.value.subnet_id
         }
       }
   }
