@@ -126,6 +126,24 @@ resource "yandex_resourcemanager_folder_iam_member" "images-puller" {
   member    = "serviceAccount:${yandex_iam_service_account.k8s.id}"
 }
 
+resource "yandex_resourcemanager_cloud_iam_binding" "alb-editor" {
+  cloud_id = local.cloud_id
+  role     = "alb.editor"
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
+}
+
+resource "yandex_resourcemanager_cloud_iam_binding" "certificate-downloader" {
+  cloud_id = local.cloud_id
+  role     = "certificate-manager.certificates.downloader"
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
+}
+
+resource "yandex_resourcemanager_cloud_iam_binding" "compute-viewer" {
+  cloud_id = local.cloud_id
+  role     = "compute.viewer"
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
+}
+
 resource "yandex_kms_symmetric_key" "kms-key" {
   name              = "kms-key"
   default_algorithm = "AES_128"
