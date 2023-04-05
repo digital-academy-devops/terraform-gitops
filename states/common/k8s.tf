@@ -64,7 +64,7 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
 
     network_interface {
       nat                = true
-      subnet_id          = data.terraform_remote_state.system.outputs.default-subnets[2]
+      subnet_ids         = [data.terraform_remote_state.system.outputs.default-subnets[2]]
       security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
     }
 
