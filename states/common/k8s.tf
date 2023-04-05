@@ -24,7 +24,7 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
       region = "ru-central1"
 
       dynamic "location" {
-        for_each = data.yandex_vpc_subnet.default.*
+        for_each = sort(data.yandex_vpc_subnet.default.*)
         content {
           zone      = location.value.zone
           subnet_id = location.value.subnet_id
