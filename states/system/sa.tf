@@ -12,6 +12,7 @@ module "terraform-sa" {
     "kms.admin",
     "k8s.admin",
     "k8s.cluster-api.cluster-admin",
+    "dns.admin",
   ]
 }
 
@@ -30,5 +31,6 @@ module "terraform-viewer-sa" {
     "kms.viewer",
     "k8s.viewer",
     "k8s.cluster-api.viewer",
+    "dns.viewer",
   ]
 }
