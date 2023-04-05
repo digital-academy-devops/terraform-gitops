@@ -48,6 +48,60 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
   }
 }
 
+resource "yandex_kubernetes_node_group" "standard-v2" {
+  cluster_id  = yandex_kubernetes_cluster.k8s-regional.id
+  name        = "standard-v2"
+  description = "description"
+  version     = "1.23"
+
+  instance_template {
+    platform_id = "standard-v2"
+
+    network_interface {
+      nat                = true
+      subnet_ids         = data.yandex_vpc_network.default.subnet_ids
+      security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
+    }
+
+    resources {
+      memory = 2
+      cores  = 2
+    }
+
+    boot_disk {
+      type = "network-hdd"
+      size = 64
+    }
+
+    scheduling_policy {
+      preemptible = false
+    }
+
+    container_runtime {
+      type = "docker"
+    }
+  }
+
+  scale_policy {
+    auto_scale {
+      initial = 0
+      max = 5
+      min = 0
+    }
+  }
+
+  allocation_policy {
+    dynamic "location" {
+        for_each = data.yandex_vpc_subnet.default.*
+        content {
+          zone      = location.value.zone
+          subnet_id = location.value.subnet_id
+        }
+      }
+  }
+
+}
+
 resource "yandex_iam_service_account" "k8s" {
   name        = local.sa_name
   description = "K8S regional service account"
