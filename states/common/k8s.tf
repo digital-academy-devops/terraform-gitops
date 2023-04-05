@@ -48,7 +48,7 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
   }
 }
 
-resource "yandex_kubernetes_node_group" "standard-v2" {
+resource "yandex_kubernetes_node_group" "standard-v2-a" {
   cluster_id  = yandex_kubernetes_cluster.k8s-regional.id
   name        = "standard-v2"
   description = "description"
@@ -85,18 +85,13 @@ resource "yandex_kubernetes_node_group" "standard-v2" {
   scale_policy {
     auto_scale {
       initial = 0
-      max = 5
+      max = 2
       min = 0
     }
   }
 
-  allocation_policy {
-    dynamic "location" {
-        for_each = data.yandex_vpc_subnet.default.*
-        content {
-          zone      = location.value.zone
-        }
-      }
+  location {
+    zone =  "ru-central1-a"
   }
 
 }
