@@ -59,7 +59,7 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
 
     network_interface {
       nat                = true
-      subnet_ids         = data.yandex_vpc_network.default.subnet_ids
+      subnet_ids         = [data.yandex_vpc_subnet.default.*.subnet_id]
       security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
     }
 
