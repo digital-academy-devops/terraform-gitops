@@ -138,11 +138,11 @@ resource "yandex_resourcemanager_cloud_iam_binding" "certificate-downloader" {
   members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
 }
 
-resource "yandex_resourcemanager_cloud_iam_binding" "compute-viewer" {
-  cloud_id = local.cloud_id
-  role     = "compute.viewer"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
-}
+#resource "yandex_resourcemanager_cloud_iam_binding" "compute-viewer" {
+#  cloud_id = local.cloud_id
+#  role     = "compute.viewer"
+#  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
+#}
 
 resource "yandex_kms_symmetric_key" "kms-key" {
   name              = "kms-key"
