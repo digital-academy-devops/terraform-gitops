@@ -15,6 +15,7 @@ locals {
 }
 
 resource "yandex_kubernetes_cluster" "k8s-regional" {
+  name = "course1"
   network_id = data.yandex_vpc_network.default.id
   master {
     version = local.version
