@@ -3,7 +3,7 @@ data "yandex_vpc_network" "default" {
 }
 
 data "yandex_vpc_subnet" "default" {
-  count = length(data.yandex_vpc_network.default.subnet_ids)
+  count     = length(data.yandex_vpc_network.default.subnet_ids)
   subnet_id = data.yandex_vpc_network.default.subnet_ids[count.index]
 }
 
@@ -15,6 +15,7 @@ locals {
 }
 
 resource "yandex_kubernetes_cluster" "k8s-regional" {
+  name       = "course1"
   network_id = data.yandex_vpc_network.default.id
   master {
     version = local.version
@@ -32,7 +33,7 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
     }
 
     security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
-    public_ip = true
+    public_ip          = true
   }
   service_account_id      = yandex_iam_service_account.k8s.id
   node_service_account_id = yandex_iam_service_account.k8s.id
@@ -45,6 +46,10 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
 
   kms_provider {
     key_id = yandex_kms_symmetric_key.kms-key.id
+  }
+
+  lifecycle {
+    ignore_changes = [ master[0].regional[0] ]
   }
 }
 
@@ -85,14 +90,14 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
   scale_policy {
     auto_scale {
       initial = 0
-      max = 2
-      min = 0
+      max     = 2
+      min     = 0
     }
   }
 
   allocation_policy {
     location {
-      zone =  "ru-central1-a"
+      zone = "ru-central1-a"
     }
   }
 
@@ -106,19 +111,37 @@ resource "yandex_iam_service_account" "k8s" {
 resource "yandex_resourcemanager_cloud_iam_binding" "k8s-clusters-agent" {
   cloud_id = local.cloud_id
   role     = "k8s.clusters.agent"
-  members  = [ "serviceAccount:${yandex_iam_service_account.k8s.id}" ]
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
 }
 
 resource "yandex_resourcemanager_cloud_iam_binding" "vpc-public-admin" {
   cloud_id = local.cloud_id
   role     = "vpc.publicAdmin"
-  members  = [ "serviceAccount:${yandex_iam_service_account.k8s.id}" ]
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "images-puller" {
   folder_id = local.folder_id
   role      = "container-registry.images.puller"
   member    = "serviceAccount:${yandex_iam_service_account.k8s.id}"
+}
+
+resource "yandex_resourcemanager_cloud_iam_binding" "alb-editor" {
+  cloud_id = local.cloud_id
+  role     = "alb.editor"
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
+}
+
+resource "yandex_resourcemanager_cloud_iam_binding" "certificate-downloader" {
+  cloud_id = local.cloud_id
+  role     = "certificate-manager.certificates.downloader"
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
+}
+
+resource "yandex_resourcemanager_cloud_iam_binding" "compute-viewer" {
+  cloud_id = local.cloud_id
+  role     = "compute.viewer"
+  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
 }
 
 resource "yandex_kms_symmetric_key" "kms-key" {
@@ -136,8 +159,8 @@ resource "yandex_kms_symmetric_key_iam_binding" "viewer" {
 }
 
 resource "yandex_vpc_security_group" "k8s-main-sg" {
-  name        = "k8s-main-sg"
-  network_id  = data.yandex_vpc_network.default.id
+  name       = "k8s-main-sg"
+  network_id = data.yandex_vpc_network.default.id
   ingress {
     protocol          = "TCP"
     description       = "Allow healtchecks"
@@ -153,29 +176,29 @@ resource "yandex_vpc_security_group" "k8s-main-sg" {
     to_port           = 65535
   }
   ingress {
-    protocol          = "ICMP"
-    description       = "allow ICMP"
-    v4_cidr_blocks    = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+    protocol       = "ICMP"
+    description    = "allow ICMP"
+    v4_cidr_blocks = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
   }
   ingress {
-    protocol          = "TCP"
-    description       = "allow incoming nodeports connections"
-    v4_cidr_blocks    = ["0.0.0.0/0"]
-    from_port         = 30000
-    to_port           = 32767
+    protocol       = "TCP"
+    description    = "allow incoming nodeports connections"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    from_port      = 30000
+    to_port        = 32767
   }
   ingress {
-    protocol          = "TCP"
-    description       = "Allow HTTPS"
-    v4_cidr_blocks    = ["0.0.0.0/0"]
-    from_port         = 0
-    to_port           = 443
+    protocol       = "TCP"
+    description    = "Allow HTTPS"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    from_port      = 0
+    to_port        = 443
   }
   egress {
-    protocol          = "ANY"
-    description       = "allow all"
-    v4_cidr_blocks    = ["0.0.0.0/0"]
-    from_port         = 0
-    to_port           = 65535
+    protocol       = "ANY"
+    description    = "allow all"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    from_port      = 0
+    to_port        = 65535
   }
 }
