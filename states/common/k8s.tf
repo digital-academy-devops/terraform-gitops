@@ -12,24 +12,31 @@ locals {
   cloud_id  = data.terraform_remote_state.system.outputs.cloud-id
   version   = "1.23"
   sa_name   = "kube"
+  zone1 = "ru-central1-a"
+  zone2 = "ru-central1-b"
 }
 
-resource "yandex_kubernetes_cluster" "k8s-regional" {
+resource "yandex_kubernetes_cluster" "common" {
   name       = "course1"
   network_id = data.yandex_vpc_network.default.id
   master {
     version = local.version
 
-    regional {
-      region = "ru-central1"
+    #regional {
+    #  region = "ru-central1"
+    #
+    #  dynamic "location" {
+    #    for_each = data.yandex_vpc_subnet.default.*
+    #    content {
+    #      zone      = location.value.zone
+    #      subnet_id = location.value.subnet_id
+    #    }
+    #  }
+    #}
 
-      dynamic "location" {
-        for_each = data.yandex_vpc_subnet.default.*
-        content {
-          zone      = location.value.zone
-          subnet_id = location.value.subnet_id
-        }
-      }
+    zonal {
+      zone      = local.zone1
+      subnet_id = [for subnet in data.yandex_vpc_subnet.default: subnet.id if subnet.zone == local.zone1 && startswith(subnet.name, "default-") ][0]
     }
 
     security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
@@ -48,13 +55,11 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
     key_id = yandex_kms_symmetric_key.kms-key.id
   }
 
-  lifecycle {
-    ignore_changes = [ master[0].regional[0] ]
-  }
 }
 
-resource "yandex_kubernetes_node_group" "standard-v2-a" {
-  cluster_id  = yandex_kubernetes_cluster.k8s-regional.id
+
+resource "yandex_kubernetes_node_group" "standard-v2-zone1" {
+  cluster_id  = yandex_kubernetes_cluster.common.id
   name        = "standard-v2"
   description = "description"
   version     = "1.23"
@@ -64,7 +69,7 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
 
     network_interface {
       nat                = true
-      subnet_ids         = [for subnet in data.yandex_vpc_subnet.default: subnet.id if subnet.zone == "ru-central1-a" && startswith(subnet.name, "default-") ]
+      subnet_ids         = [for subnet in data.yandex_vpc_subnet.default: subnet.id if subnet.zone == local.zone1 && startswith(subnet.name, "default-") ]
       security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
     }
 
@@ -97,7 +102,7 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
 
   allocation_policy {
     location {
-      zone = "ru-central1-a"
+      zone = local.zone1
     }
   }
 
@@ -105,7 +110,7 @@ resource "yandex_kubernetes_node_group" "standard-v2-a" {
 
 resource "yandex_iam_service_account" "k8s" {
   name        = local.sa_name
-  description = "K8S regional service account"
+  description = "K8S service account"
 }
 
 resource "yandex_resourcemanager_cloud_iam_binding" "k8s-clusters-agent" {
@@ -124,12 +129,6 @@ resource "yandex_resourcemanager_folder_iam_member" "images-puller" {
   folder_id = local.folder_id
   role      = "container-registry.images.puller"
   member    = "serviceAccount:${yandex_iam_service_account.k8s.id}"
-}
-
-resource "yandex_resourcemanager_cloud_iam_binding" "alb-editor" {
-  cloud_id = local.cloud_id
-  role     = "alb.editor"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
 }
 
 resource "yandex_resourcemanager_cloud_iam_binding" "certificate-downloader" {
