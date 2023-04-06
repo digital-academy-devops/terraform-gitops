@@ -36,7 +36,7 @@ resource "yandex_kubernetes_cluster" "common" {
 
     zonal {
       zone      = local.zone1
-      subnet_id = [for subnet in data.yandex_vpc_subnet.default: subnet.id if subnet.zone == local.zone1 && startswith(subnet.name, "default-") ]
+      subnet_id = [for subnet in data.yandex_vpc_subnet.default: subnet.id if subnet.zone == local.zone1 && startswith(subnet.name, "default-") ][0]
     }
 
     security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
