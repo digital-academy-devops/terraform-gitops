@@ -202,3 +202,4 @@ resource "yandex_vpc_security_group" "k8s-main-sg" {
     to_port        = 65535
   }
 }
+
