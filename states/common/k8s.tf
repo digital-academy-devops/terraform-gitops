@@ -60,7 +60,7 @@ resource "yandex_kubernetes_cluster" "common" {
 
 resource "yandex_kubernetes_node_group" "standard-v2-zone1" {
   cluster_id  = yandex_kubernetes_cluster.common.id
-  name        = "standard-v2"
+  name        = "standard-v2-${local.zone1}"
   description = "description"
   version     = "1.23"
 
@@ -103,6 +103,56 @@ resource "yandex_kubernetes_node_group" "standard-v2-zone1" {
   allocation_policy {
     location {
       zone = local.zone1
+    }
+  }
+
+}
+  
+resource "yandex_kubernetes_node_group" "standard-v2-zone2" {
+  cluster_id  = yandex_kubernetes_cluster.common.id
+  name        = "standard-v2-${local.zone2}"
+  description = "description"
+  version     = "1.23"
+
+  instance_template {
+    platform_id = "standard-v2"
+
+    network_interface {
+      nat                = true
+      subnet_ids         = [for subnet in data.yandex_vpc_subnet.default: subnet.id if subnet.zone == local.zone2 && startswith(subnet.name, "default-") ]
+      security_group_ids = [yandex_vpc_security_group.k8s-main-sg.id]
+    }
+
+    resources {
+      memory = 2
+      cores  = 2
+    }
+
+    boot_disk {
+      type = "network-hdd"
+      size = 64
+    }
+
+    scheduling_policy {
+      preemptible = false
+    }
+
+    container_runtime {
+      type = "docker"
+    }
+  }
+
+  scale_policy {
+    auto_scale {
+      initial = 0
+      max     = 2
+      min     = 0
+    }
+  }
+
+  allocation_policy {
+    location {
+      zone = local.zone2
     }
   }
 
