@@ -14,6 +14,17 @@ locals {
   sa_name   = "kube"
   zone1 = "ru-central1-a"
   zone2 = "ru-central1-b"
+  
+  k8s_sa_roles = [
+    "k8s.clusters.agent",
+    "vpc.publicAdmin",
+    "container-registry.images.puller",
+    "certificate-manager.certificates.downloader",
+    "compute.viewer",
+    "alb.editor",
+    "load-balancer.admin",
+    "dns.editor"
+  ]
 }
 
 resource "yandex_kubernetes_cluster" "common" {
@@ -46,9 +57,7 @@ resource "yandex_kubernetes_cluster" "common" {
   node_service_account_id = yandex_iam_service_account.k8s.id
 
   depends_on = [
-    yandex_resourcemanager_cloud_iam_binding.k8s-clusters-agent,
-    yandex_resourcemanager_cloud_iam_binding.vpc-public-admin,
-    yandex_resourcemanager_folder_iam_member.images-puller
+    yandex_resourcemanager_cloud_iam_binding.cloud-bindings
   ]
 
   kms_provider {
@@ -162,42 +171,15 @@ resource "yandex_iam_service_account" "k8s" {
   name        = local.sa_name
   description = "K8S service account"
 }
-
-resource "yandex_resourcemanager_cloud_iam_binding" "k8s-clusters-agent" {
+ 
+resource "yandex_resourcemanager_cloud_iam_binding" "cloud-bindings" {
+  for_each = toset(local.k8s_sa_roles)
   cloud_id = local.cloud_id
-  role     = "k8s.clusters.agent"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
-}
-
-resource "yandex_resourcemanager_cloud_iam_binding" "vpc-public-admin" {
-  cloud_id = local.cloud_id
-  role     = "vpc.publicAdmin"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
-}
-
-resource "yandex_resourcemanager_folder_iam_member" "images-puller" {
-  folder_id = local.folder_id
-  role      = "container-registry.images.puller"
-  member    = "serviceAccount:${yandex_iam_service_account.k8s.id}"
-}
-
-resource "yandex_resourcemanager_cloud_iam_binding" "certificate-downloader" {
-  cloud_id = local.cloud_id
-  role     = "certificate-manager.certificates.downloader"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
-}
-
-resource "yandex_resourcemanager_cloud_iam_binding" "compute-viewer" {
-  cloud_id = local.cloud_id
-  role     = "compute.viewer"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
-}
-  
-resource "yandex_resourcemanager_cloud_iam_binding" "alb-editor" {
-  cloud_id = local.cloud_id
-  role     = "alb.editor"
-  members  = ["serviceAccount:${yandex_iam_service_account.k8s.id}"]
-}
+  members = [
+    "serviceAccount:${yandex_iam_service_account.k8s.id}",
+  ]
+  role = each.key
+}  
 
 resource "yandex_kms_symmetric_key" "kms-key" {
   name              = "kms-key"
