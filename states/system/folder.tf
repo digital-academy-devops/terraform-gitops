@@ -103,3 +103,15 @@ resource "yandex_resourcemanager_folder" "eostrovatikova" {
 output "eostrovatikova-folder-id" {
   value = yandex_resourcemanager_folder.eostrovatikova.id
 }
+
+resource "yandex_resourcemanager_folder" "alin" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "alin"
+  labels = {
+    owner = "andreyalin"
+  }
+}
+
+output "alin-folder-id" {
+  value = yandex_resourcemanager_folder.alin.id
+}
