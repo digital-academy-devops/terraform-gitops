@@ -23,6 +23,5 @@ module "terraform-viewer-sa" {
     "storage.viewer",
     "iam.viewer",
     "vpc.viewer",
-    "load-balancer.viewer"
   ]
 }
