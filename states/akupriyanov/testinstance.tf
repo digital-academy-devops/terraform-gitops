@@ -4,7 +4,7 @@ locals {
 }
 
 resource "yandex_compute_instance" "testvm" {
-  count = 5
+  count = 1
   name        = "${local.group_prefix}-${count.index}"
   platform_id = "standard-v1"
 
@@ -26,7 +26,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("yc.pub")}"
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
   }
 
   scheduling_policy {

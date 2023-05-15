@@ -3,5 +3,7 @@
 
 # Default reviewers for all PRs
 *    @digital-academy-devops
-states/mostashkin @mostashkin
-states/mostashkin2 @mostashkin
+states/mostashkin @mostashkin @digital-academy-devops
+states/vbystritskiy @TeqquilaSunset
+states/akupriyanov @ANDRIKUP
+states/pmironenko @Stellarthoughts

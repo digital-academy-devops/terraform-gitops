@@ -1,11 +1,7 @@
-locals {
-  zone = "ru-central1-a"
-  group_prefix = "testinstance"
-}
-
 resource "yandex_compute_instance" "testvm" {
-  count = 5
-  name        = "${local.group_prefix}-${count.index}"
+  count = var.instance_number
+
+  name        = "${var.group_prefix}-vm-${count.index}"
   platform_id = "standard-v1"
 
   resources {
@@ -21,7 +17,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   network_interface {
-    subnet_id = data.terraform_remote_state.system.outputs.default-subnets[2]
+    subnet_id = data.yandex_vpc_subnet.default_zone_subnet.id
     nat       = true
   }
 
@@ -36,5 +32,9 @@ resource "yandex_compute_instance" "testvm" {
 }
 
 data "yandex_compute_image" "my_image" {
-  family = "ubuntu-2204-lts"
+  name = "${var.image_name}"
+}
+
+data "yandex_vpc_subnet" "default_zone_subnet" {
+  name = "default-${var.zone}"
 }

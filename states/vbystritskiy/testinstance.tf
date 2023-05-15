@@ -1,10 +1,10 @@
 locals {
-  zone = "ru-central1-a"
+  zone         = "ru-central1-a"
   group_prefix = "testinstance"
 }
 
 resource "yandex_compute_instance" "testvm" {
-  count = 5
+  count       = 1
   name        = "${local.group_prefix}-${count.index}"
   platform_id = "standard-v1"
 
@@ -16,6 +16,7 @@ resource "yandex_compute_instance" "testvm" {
 
   boot_disk {
     initialize_params {
+      size     = 10
       image_id = data.yandex_compute_image.my_image.id
     }
   }
@@ -26,7 +27,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("yc.pub")}"
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
   }
 
   scheduling_policy {
