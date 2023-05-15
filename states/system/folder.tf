@@ -1,5 +1,6 @@
 
-resource "yandex_resourcemanager_folder" "Herman7883 {
+
+resource "yandex_resourcemanager_folder" "Herman7883" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "Herman7883"
   labels = {
@@ -19,7 +20,6 @@ resource "yandex_resourcemanager_folder" "common" {
 output "common-folder-id" {
   value = yandex_resourcemanager_folder.common.id
 }
-
 
 resource "yandex_resourcemanager_folder" "mostashkin" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id

@@ -3,7 +3,13 @@
 
 # Default reviewers for all PRs
 *    @digital-academy-devops
+states/common @mostashkin @digital-academy-devops
 states/mostashkin @mostashkin @digital-academy-devops
-states/vbystritskiy @TeqquilaSunset
-states/akupriyanov @ANDRIKUP
-states/pmironenko @Stellarthoughts
+states/vbystritskiy @TeqquilaSunset @digital-academy-devops
+states/akupriyanov @ANDRIKUP @digital-academy-devops
+states/pmironenko @Stellarthoughts @digital-academy-devops
+states/robonen @robonen @digital-academy-devops
+states/amalkov @Sodx1 @digital-academy-devops
+states/eostrovatikova @slylii @digital-academy-devops
+states/glebedev @I1ss @digital-academy-devops
+states/alin @S4B1K24 @digital-academy-devops
