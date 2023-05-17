@@ -10,14 +10,14 @@ output "mostashkin-folder-id" {
   value = yandex_resourcemanager_folder.mostashkin.id
 }
 
-resource "yandex_resourcemanager_folder" "Herman7883" {
+resource "yandex_resourcemanager_folder" "zhuikov" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
-  name     = "Herman7883"
+  name     = "zhuikov"
   labels = {
-    owner = "gzhuikov"
+    owner = "hzhuikov"
   }
 }
 
-output "Herman7883-folder-id" {
-  value = yandex_resourcemanager_folder.Herman7883.id
+output "zhuikov-folder-id" {
+  value = yandex_resourcemanager_folder.zhuikov.id
 }
