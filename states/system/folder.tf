@@ -140,6 +140,18 @@ output "hzhuikov-folder-id" {
   value = yandex_resourcemanager_folder.hzhuikov.id
 }
 
+resource "yandex_resourcemanager_folder" "shpagin" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "shpagin"
+  labels = {
+    owner = "evgenyshpagin"
+  }
+}
+
+output "shpagin-folder-id" {
+  value = yandex_resourcemanager_folder.shpagin.id
+}
+
 resource "yandex_resourcemanager_folder" "sheverev" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "sheverev"
