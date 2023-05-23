@@ -104,7 +104,7 @@ resource "yandex_kubernetes_node_group" "standard-v2-zone1" {
   scale_policy {
     auto_scale {
       initial = 0
-      max     = 2
+      max     = 10
       min     = 0
     }
   }
