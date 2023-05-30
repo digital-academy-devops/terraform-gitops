@@ -187,3 +187,16 @@ resource "yandex_resourcemanager_folder" "idenisov" {
 output "idenisov-folder-id" {
   value = yandex_resourcemanager_folder.idenisov.id
 }
+
+resource "yandex_resourcemanager_folder" "nmelekhov" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "nmelekhov"
+  labels = {
+    owner = "nmelekhov"
+  }
+}
+
+output "nmelekhov-folder-id" {
+  value = yandex_resourcemanager_folder.nmelekhov.id
+}
+
