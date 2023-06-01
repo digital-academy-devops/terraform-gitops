@@ -175,3 +175,14 @@ resource "yandex_resourcemanager_folder" "abekrenev" {
 output "abekrenev-folder-id" {
   value = yandex_resourcemanager_folder.abekrenev.id
 }
+resource "yandex_resourcemanager_folder" "zah" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "zah"
+  labels = {
+    owner = "zah"
+  }
+}
+
+output "zah-folder-id" {
+  value = yandex_resourcemanager_folder.zah.id
+}
