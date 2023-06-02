@@ -200,14 +200,14 @@ output "zhportnyagin-folder-id" {
   value = yandex_resourcemanager_folder.zhportnyagin.id
 }
 
-resource "yandex_resourcemanager_folder" "zah" {
+resource "yandex_resourcemanager_folder" "MedianikZakhar" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
-  name     = "zah"
+  name     = "MedianikZakhar"
   labels = {
-    owner = "zah"
+    owner = "MedianikZakhar"
   }
 }
 
-output "zah-folder-id" {
-  value = yandex_resourcemanager_folder.zah.id
+output "MedianikZakhar-folder-id" {
+  value = yandex_resourcemanager_folder.MedianikZakhar.id
 }
