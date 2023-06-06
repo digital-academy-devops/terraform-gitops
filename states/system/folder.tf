@@ -200,6 +200,8 @@ output "zhportnyagin-folder-id" {
   value = yandex_resourcemanager_folder.zhportnyagin.id
 }
 
+
+
 resource "yandex_resourcemanager_folder" "nmelekhov" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "nmelekhov"
@@ -222,7 +224,12 @@ resource "yandex_resourcemanager_folder" "aprokopev" {
   
 output "aprokopev-folder-id" {
   value = yandex_resourcemanager_folder.aprokopev.id
+
+
 }
+
+
+
 
 resource "yandex_resourcemanager_folder" "kondratev" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
@@ -234,4 +241,15 @@ resource "yandex_resourcemanager_folder" "kondratev" {
 
 output "kondratev-folder-id" {
   value = yandex_resourcemanager_folder.kondratev.id
+}
+resource "yandex_resourcemanager_folder" "MedianikZakhar" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "MedianikZakhar"
+  labels = {
+    owner = "MedianikZakhar"
+  }
+}
+
+output "MedianikZakhar-folder-id" {
+  value = yandex_resourcemanager_folder.MedianikZakhar.id
 }
