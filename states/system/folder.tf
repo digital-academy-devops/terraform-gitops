@@ -263,7 +263,7 @@ resource "yandex_resourcemanager_folder" "sivtsovgleb" {
 output "sivtsovgleb-folder-id" {
   value = yandex_resourcemanager_folder.sivtsovgleb.id
 }
-resource "yandex_resourcemanager_folder" "maksimLyubomsky {
+resource "yandex_resourcemanager_folder" "maksimLyubomsky" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "maksimLyubomsky"
   labels = {
