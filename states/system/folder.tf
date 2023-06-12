@@ -263,3 +263,15 @@ resource "yandex_resourcemanager_folder" "sivtsovgleb" {
 output "sivtsovgleb-folder-id" {
   value = yandex_resourcemanager_folder.sivtsovgleb.id
 }
+
+resource "yandex_resourcemanager_folder" "ipanaev" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "ipanaev"
+  labels = {
+    owner = "ivanpanaev"
+  }
+}
+
+output "ipanaev-folder-id" {
+  value = yandex_resourcemanager_folder.ipanaev.id
+}
