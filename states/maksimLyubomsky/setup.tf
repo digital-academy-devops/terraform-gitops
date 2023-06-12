@@ -13,7 +13,7 @@ terraform {
     endpoint = "storage.yandexcloud.net"
     bucket   = "do-course-1-tf"
     region   = "ru-central1"
-    key      = "states/folders/maksimLyubomsky/terraform.tfstate"
+    key      = "states/folders/maksimlyubomsky/terraform.tfstate"
 
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -39,5 +39,5 @@ provider "yandex" {
   zone                     = "ru-central1-a"
   service_account_key_file = "sa_key.json"
   cloud_id                 = data.terraform_remote_state.system.outputs.cloud-id
-  folder_id                = data.terraform_remote_state.system.outputs.maksimLyubomsky-folder-id
+  folder_id                = data.terraform_remote_state.system.outputs.maksimlyubomsky-folder-id
 }
