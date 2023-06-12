@@ -278,14 +278,14 @@ resource "yandex_resourcemanager_folder" "shmulko" {
 output "shmulko-folder-id" {
   value = yandex_resourcemanager_folder.shmulko.id
 }
-resource "yandex_resourcemanager_folder" "maksimLyubomsky" {
+resource "yandex_resourcemanager_folder" "maksimlyubomsky" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
-  name     = "maksimLyubomsky"
+  name     = "maksimlyubomsky"
   labels = {
-    owner = "maksimLyubomsky"
+    owner = "maksimlyubomsky"
   }
 }
 
-output "maksimLyubomsky-folder-id" {
-  value = yandex_resourcemanager_folder.maksimLyubomsky.id
+output "maksimlyubomsky-folder-id" {
+  value = yandex_resourcemanager_folder.maksimlyubomsky.id
 }
