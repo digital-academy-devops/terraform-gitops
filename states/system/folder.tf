@@ -264,6 +264,29 @@ output "sivtsovgleb-folder-id" {
   value = yandex_resourcemanager_folder.sivtsovgleb.id
 }
 
+resource "yandex_resourcemanager_folder" "shmulko" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "shmulko"
+  labels = {
+    owner = "shmulkoalex"
+  }
+}
+
+output "shmulko-folder-id" {
+  value = yandex_resourcemanager_folder.shmulko.id
+}
+resource "yandex_resourcemanager_folder" "maksimlyubomsky" {
+  cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
+  name     = "maksimlyubomsky"
+  labels = {
+    owner = "maksimlyubomsky"
+  }
+}
+
+output "maksimlyubomsky-folder-id" {
+  value = yandex_resourcemanager_folder.maksimlyubomsky.id
+}
+
 resource "yandex_resourcemanager_folder" "ipanaev" {
   cloud_id = data.yandex_resourcemanager_cloud.do-course-1.id
   name     = "ipanaev"
