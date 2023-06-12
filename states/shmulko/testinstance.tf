@@ -26,7 +26,7 @@ resource "yandex_compute_instance" "testvm" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("mykey2.pub")}"
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
   }
 
   scheduling_policy {
